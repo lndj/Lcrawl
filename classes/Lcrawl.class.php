@@ -51,7 +51,7 @@ class Lcrawl{
 			//存储数据库并return			
 			//serialize()序列化存储，取用后使用unserialize()
 			$str = serialize($str);						
-			mysql::saveData($jwid,'schedule',$str)；
+			mysql::saveData($jwid,'schedule',$str);
 			
 			return $str;			
 		}	
@@ -452,7 +452,7 @@ class Lcrawl{
 		
 		$post = "__VIEWSTATE={$viewstate}&TextBox1={$jwid}&TextBox2={$jwpwd}&RadioButtonList1=%D1%A7%C9%FA&Button1=&lbLanguage=";    
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://xuanke.lzjtu.edu.cn/(gsv5oxfexlttmv32ll1nbcy4)/default_ysdx.aspx");
+		curl_setopt($ch, CURLOPT_URL, INDEX_URL."(gsv5oxfexlttmv32ll1nbcy4)/default_ysdx.aspx");
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
