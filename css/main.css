@@ -1,0 +1,336 @@
+/* ==========================================================================
+   HTML5 Boilerplate styles - h5bp.com (generated via initializr.com)
+   ========================================================================== */
+
+html, button, input, select, textarea { color: #4a4f54; }
+body { font-size: 1em; line-height: 1.4; overflow-x: hidden; }
+::-moz-selection { background: #b3d4fc; text-shadow: none; }
+::selection { background: #b3d4fc; text-shadow: none; }
+.chromeframe { margin: 0.2em 0; background: #ccc; color: #000; padding: 0.2em 0;}
+img { vertical-align: middle; }
+a{ text-decoration: none; }
+body { font: 16px/26px Helvetica, Helvetica Neue, Arial;  -webkit-font-smoothing: antialiased; font-smooth: always; text-shadow: 1px 1px 1px rgba(0,0,0,0.004);}
+
+
+
+h2, h3, h4, h5, h6{ color: #141414; line-height: 140%;	 }
+h2{ font-size: 1.2em;	 }
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #d3e1e6; padding: 0;	clear: both; margin-top: 1em; margin-right: 0; margin-bottom: 2em; margin-left: 0;  }
+.wrapper { width: 90%; margin: 0 5%; }
+
+/* ==========================================================================
+   LOGO
+   ========================================================================== */
+.header-container .logo{
+	text-indent: -10000em;
+	position: absolute;
+	width: 170px; /* Adjust Width for Logo if needed */
+	height: 46px; /* Adjust Height for Logo if needed */
+	background: url(../img/logo.png) no-repeat center 0; /* Change Your Logo Name */
+	background-size: 100%;
+	top: 40px;
+	margin: 0;
+
+}
+@media (min--moz-device-pixel-ratio: 1.5),
+	(-o-min-device-pixel-ratio: 3/2),
+	(-webkit-min-device-pixel-ratio: 1.5),
+	(min-device-pixel-ratio: 1.5),
+	(min-resolution: 1.5dppx) {
+	/* on retina, use image that's scaled by 2 */
+.header-container .logo{
+	background: url(../img/logo@2x.png) no-repeat 0 0; /* Change Retina Logo */
+}
+}
+
+
+
+
+/* ==========================================================================
+   MAIN THEME STYLES
+   ========================================================================== */ 
+
+.header-container{ }
+.header-container .wrapper{ position: relative; z-index: 5; }
+.header-container .wrapper nav { position: absolute; top: 50px; right: 0; }
+.header-container .wrapper  nav ul { margin: 0; padding: 0 20px; clear: right; float: right; background-color: rgba(0, 0, 0, .6); -webkit-border-radius: 8px 0px 8px 8px; border-radius: 8px 0px 8px 8px; }
+.header-container .wrapper  nav ul li { display: block; margin: 0;}
+.header-container .wrapper  nav a {
+	color: #fff; /* Change Nav Color*/
+    display: block; padding: 10px 0 5px; text-align: right; text-decoration: none; font-weight: bold; font-size: 1.2em;
+}
+.header-container .wrapper  nav li a:hover .header-container .wrapper  nav li a.active{ border-bottom: 3px solid #fff; }
+.header-container .wrapper  nav li.last{ margin-right: 0; }
+.header-container .wrapper  nav a:hover {
+    color: #ccc; /* Change Nav Hover Color*/
+}
+.header-container .wrapper  nav .toggleMenu{
+	background: url(../img/icon_menu.png) no-repeat 12px 10px;
+	margin-right: 0;
+	width: 28px;
+	height: 21px;
+	float: right;
+	background-color: rgba(0, 0, 0, .6);
+	-webkit-border-radius: 8px;
+	border-radius: 6px;
+	padding: 10px 12px;
+}
+@media (min--moz-device-pixel-ratio: 1.5),
+	(-o-min-device-pixel-ratio: 3/2),
+	(-webkit-min-device-pixel-ratio: 1.5),
+	(min-device-pixel-ratio: 1.5),
+	(min-resolution: 1.5dppx) {
+	/* on retina, use image that's scaled by 2 */
+.header-container .wrapper  nav .toggleMenu{
+	background: url(../img/icon_menu.png) no-repeat 12px 10px;
+	background-color: rgba(0, 0, 0, .6);
+}
+}
+
+
+.header-container .wrapper  nav .toggleMenu.active{ -webkit-border-radius: 6px 6px 0px 0px; border-radius: 6px 6px 0px 0px; }
+.main article section .icon{ float: right; margin-left: 25px; margin-bottom: 20px; margin-top: 5px; }
+.main { padding: 10px 0 10px; }
+
+
+
+/* ==========================================================================
+   Quote
+   ========================================================================== */ 
+.flexslider2{
+	color: #41454b; /* Change Quote Color*/
+	padding-top: 1.5em; padding-bottom: 2em; font: 28px/140% "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; font-weight: 300; clear: both;
+}
+.flexslider2 span{
+	color: #0ca2d9; /* Change Quote By Color*/
+	font: bold 16px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; display: block; margin-top: 20px;
+}
+
+
+
+
+
+/* ==========================================================================
+   CTA Button
+   ========================================================================== */ 
+.btn{
+	background: #df5b1c; /* Change Button Background Color*/
+	color: #fff;  /* Change Button Text Color*/
+	margin-top: 10px; display: inline-table; padding: 15px 60px; font-size: 20px;font-weight: 700; border-radius: 3px;
+	-webkit-transition: all 300ms ease-in-out;
+	-moz-transition: all 300ms ease-in-out;
+	-ms-transition: all 300ms ease-in-out;
+	-o-transition: all 300ms ease-in-out;
+	transition: all 300ms ease-in-out;
+}
+.btn:hover{
+	background: #fff; /* Change Button Background Hover Color*/
+	color: #232323; /* Change Button Text Hover Color*/ 
+}
+
+
+
+#slides .slides-container li .container { width: 100%; margin: 0 auto 30px auto; position: relative; height: 100%; color: #fff; display: block; }
+#slides .slides-container li .container .column, #slides .slides-container li .container .columnRight { 
+	width: 91%; position: absolute; text-align: center; padding: 10px 5% 70px; background: none; 
+}
+.slides-pagination { position: absolute; z-index: 3; bottom: 0px; text-align: center; width: 100%; height: 40px; }
+.slides-pagination a {
+  border: none;
+  border-radius: 15px;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  margin: 2px;
+  background-color: rgba(255, 255, 255, .4);
+  -webkit-transition: all 250ms ease-in-out;
+  -moz-transition: all 250ms ease-in-out;
+  -ms-transition: all 250ms ease-in-out;
+  -o-transition: all 250ms ease-in-out;
+  transition: all 250ms ease-in-out;
+}
+.slides-pagination a.active,.slides-pagination a:hover { background-color: rgba(255, 255, 255, 1); }
+
+.main article section { border-bottom: 1px solid #d3e1e6; padding: 25px 0; }
+.column p, .columnRight p, .column h1, .columnRight h1{ display: none;}
+
+
+
+
+
+/* ==========================================================================
+   FOOTER LOGO
+   ========================================================================== */ 
+.footer-container h1{
+	text-indent: -10000em;
+	position: relative;
+	width: 86px; /* Adjust Width for Logo if needed */
+	height: 24px; /* Adjust Height for Logo if needed */
+	background: url(../img/footlogo.png) no-repeat center 0; /* Change Logo */
+	background-size: 100%;
+	margin: 0 auto 40px;
+}
+@media (min--moz-device-pixel-ratio: 1.5),
+	(-o-min-device-pixel-ratio: 3/2),
+	(-webkit-min-device-pixel-ratio: 1.5),
+	(min-device-pixel-ratio: 1.5),
+	(min-resolution: 1.5dppx) {
+	/* on retina, use image that's scaled by 2 */
+.footer-container h1{
+	background: url(../img/footlogo@2x.png) no-repeat 0 0; /*Change Retina Logo */
+}
+}
+
+
+.footer-container{ background: #f2f4f7; padding-top: 3em; padding-bottom: 3em; }
+.footer-container ul{ padding: 0; margin: 0; text-align: center; }
+.footer-container li{ display: inline-block; text-align: center; list-style-type: none; margin: 0 15px; }
+.footer-container li:first-child{ margin-left: 0; }
+.footer-container li:lst-child{ margin-right: 0; }
+.footer-container li a{
+	color: #282e33; /* Change colour of footer links */
+	font-weight: 700;
+	-webkit-transition: all 300ms ease-in-out;
+	-moz-transition: all 300ms ease-in-out;
+	-ms-transition: all 300ms ease-in-out;
+	-o-transition: all 300ms ease-in-out;
+	transition: all 300ms ease-in-out;
+}
+.footer-container li a:hover{
+	color: #119ada; /* Change colour of footer links on hover */
+}
+
+
+
+
+/* ==========================================================================
+   Internal Page Adjustments
+   ========================================================================== */
+   
+.header-container.internal { height: 150px; background-color: #2d3b42;  background-size: 100%;  
+	background-image: url(../img/4.jpg); /* Change Your Header Image */
+}
+.main-container.internal img{ width: 100%; border: none; float: none; padding-bottom: 3em; padding-top: 2em; max-width: 350px; }
+.internal .main{ padding-top: 30px;}
+.main-container.internal section{ float: none; width: 100%;padding-top: 1em; padding-bottom: 1em; border: none; }
+.main-container.internal aside{ float: none; width: 100%; border-top: 2px solid #d8dddf; padding-top: 1em; padding-bottom: 2em; margin-top: 40px; text-align: center; }
+em{ color: #a7afb6; font-style: italic; font-weight: 300; }
+.internal ol li{ margin-left: 0px; padding-top: 1em;	 }
+
+
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
+
+@media only screen and (max-width: 480px) {
+	.column p, .columnRight p, .column h1, .columnRight h1, .slides-pagination { display: none;	 }
+	#slides .slides-container li .container .column, #slides .slides-container li .container .columnRight{ background: none!important; }
+	#slides .slides-container li .container .column, #slides .slides-container li .container .columnRight { padding: 10px 5% 15px; }
+	.header-container .logo{ top: 25px; width: 35%; }
+	.header-container.internal { height: 90px; }
+	.header-container .wrapper nav{ top: 20px; }
+ }
+ 
+@media only screen and (max-width: 768px) { 
+	.header-container .wrapper  nav ul{ width: 100%;} 
+	#slides .slides-container li .container .column, #slides .slides-container li .container .columnRight{ bottom: 0px; } 
+	hr{display: none;}	
+}
+
+@media only screen and (min-width: 770px) {
+.header-container .logo{ margin: 0; top: 40px; left: 0px; }
+.header-container .wrapper nav { position: absolute; right: 0px; top: 50px; }
+.header-container .wrapper nav ul { background: none; border: none; }
+.header-container .wrapper nav ul li{ display: inline-block; margin: 0 70px 10px 0; padding: 0;  }
+.header-container .wrapper nav li a:hover, .header-container .wrapper  nav li a.active{ border-bottom: 3px solid #fff; }
+
+#slides .slides-container li .container { width: 100%; margin: 0 auto 30px auto; position: relative; top: 30%; color: #fff; }
+#slides .slides-container li .container .column, #slides .slides-container li .container .columnRight{ width: 300px; position: absolute; text-align: left; }
+#slides .slides-container li .container .column { left: 0px; }
+#slides .slides-container li .container .columnRight{ right: 0px; }
+
+#slides .slides-container li .container h1{ line-height: 110%; font-size: 26px; margin-bottom: 1.2em; }
+.column p, .columnRight p, .column h1, .columnRight h1{ display: block;	 }
+.btn{ margin-top: 30px; }
+
+.slides-pagination { position: absolute; z-index: 3; bottom: 25px; text-align: center; width: 100%; background: none; display: block; }
+
+.main article section { float: left; width: 28%; margin-right: 8%; margin-bottom:2em; border-bottom: none; padding: 0; }
+.main article section.last{ margin-right: 0;}
+.main { padding: 60px 0 30px; }
+.main-container.internal aside{ float: right; width: 35%; }
+.main-container.internal section{ float: left; width: 50%; }
+.main article section .icon{ margin-top: 15px; }
+.footer-container h1{ float: left; }
+.footer-container ul{ float: right; }
+   
+}
+
+@media only screen and (min-width: 1140px) {
+.wrapper { width: 1026px; /* 1140px - 10% for margins */ margin: 0 auto; }
+#slides .slides-container li .container { width: 1026px; }
+}
+
+
+
+
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+.clearfix:after {
+    clear: both;
+}
+.clearfix {
+    *zoom: 1;
+}
+
+
+/* ==========================================================================
+   Print styles
+   ========================================================================== */
+
+@media print {
+   * { background: transparent !important;
+       color: #000 !important; /* Black prints faster: h5bp.com/s */;
+       box-shadow: none !important;
+       text-shadow: none !important; }
+   a,
+   a:visited { text-decoration: underline }
+   a[href]:after { content: " (" attr(href) ")" }
+   abbr[title]:after { content: " (" attr(title) ")" }
+   /*
+        * Don't show links for images, or javascript/internal links
+        */
+   .ir a:after,
+   a[href^="javascript:"]:after,
+   a[href^="#"]:after { content: "" }
+   pre,
+   blockquote { border: 1px solid #999;
+                page-break-inside: avoid; }
+   thead { display: table-header-group; /* h5bp.com/t */ }
+   tr,
+   img { page-break-inside: avoid }
+   img { max-width: 100% !important }
+}
