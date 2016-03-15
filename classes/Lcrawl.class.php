@@ -367,8 +367,6 @@ class Lcrawl{
 		}
 	}
 
-
-
 	/**
 	*	默认查询当前学期的选课情况，可GET获取，其余学期的需POST请求，参数：
 	*	__EVENTTARGET:ddlXN
