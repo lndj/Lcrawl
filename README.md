@@ -1,5 +1,7 @@
 #框架简介：
 
+[![Join the chat at https://gitter.im/lndj/Lcrawl](https://badges.gitter.im/lndj/Lcrawl.svg)](https://gitter.im/lndj/Lcrawl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 
 使用PHP+MySQL实现正方教务系统爬虫功能。
 
