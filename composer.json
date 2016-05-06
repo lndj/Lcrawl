@@ -1,0 +1,21 @@
+{
+    "name": "lndj/Lcrawl",
+    "authors": [
+        {
+            "name": "Ning Luo",
+            "email": "luoning@luoning.me"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "~6.0",
+        "symfony/dom-crawler": "^3.0",
+        "symfony/css-selector": "^3.0",
+        "doctrine/cache": "^1.6",
+        "imangazaliev/didom": "^1.6"
+    },
+    "autoload": {
+    	"psr-4": {
+            "Lndj\\": "src/"
+        }
+    }
+}
