@@ -13,19 +13,18 @@ use GuzzleHttp\Promise;
 use GuzzleHttp\Pool;
 use Symfony\Component\DomCrawler\Crawler;
 
-use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Exception\RequestException;
-
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\FilesystemCache;
 /**
 * 
 */
 class Lcrawl
 {
-	private $client;
+	private $client; 
 
 	private $base_uri; //The base_uri of your Academic Network Systems. Like 'http://xuanke.lzjtu.edu.cn/'
 
-	private $timeout = 2.0; 
+	private $timeout = 3.0; 
 
 	private $ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36';
 
@@ -34,48 +33,110 @@ class Lcrawl
 	private $password;
 
 	private $cacheCookie = false; // Is cookie cached
+
+	private $cache; //Doctrine\Common\Cache\Cache
+
+	private $cachePrefix = 'Lcrawl-';
 	
-	function __construct($base_uri)
+	function __construct($base_uri, $user, $config = [])
 	{
+		//Set the base_uri.
 		$this->base_uri = $base_uri;
 
-		$this->client = new Client([
+		//Set the stu_id and password
+		if (is_array($user) && $user['stu_id'] && $user['stu_pwd']) {
+			$this->stu_id = $user['stu_id'];
+			$this->password = $user['stu_pwd'];
+		} elseif (is_object($user) && $user->stu_id && $user->stu_pwd) {
+			$this->stu_id = $user->stu_id;
+			$this->password = $user->stu_pwd;
+		} else {
+			throw new Exception("You must give Lcrawl the user info, like ['stu_id' => '2012xxxxx', 'stu_pwd' => 'xxxx']", 1);
+		}
+		//Set the config, like cacheCookie/UA/Timeout
+		if (!empty($config)) {
+			foreach ($config as $con => $value) {
+				$this->$con = $value;
+			}
+		}
+		$client_param = [
 		    // Base URI is used with relative requests
 		    'base_uri' => $this->base_uri,
 		    // You can set any number of default request options.
 		    'timeout'  => $this->timeout,
-		    'cookies' => true,
 		    'headers' => [
 		        'User-Agent'   => $this->ua,
 		        'Accept'       => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 		        'Referer'      => $this->base_uri . 'default_ysdx.aspx',
 		        'Content-Type' => 'application/x-www-form-urlencoded'
 		    ], 
-		]);
+		];
+		//If don't cache cookies, set cookies true, every request use cookie by default way.
+		if (!$this->cacheCookie) {
+			$client_param['cookies'] = true;
+		}
+		$this->client = new Client($client_param);
 	}
 
-	public function setTimeOut($timeout)
-	{
-		if (!is_numeric($timeout)) {
-			throw new Exception('The Timeout value must be a number', 1);
-		}
-		$this->timeout = $timeout;
-	}
+	/**
+	 * @param string $$ua Set the UserAgent to the crawler.
+	 * @return Object $this
+	 */
 	public function setUserAgent($ua)
 	{
 		$this->ua = $ua;
+		return $this;
 	}
-	public function setCookieCache()
-	{
-		
-	}
+	
+	/**
+     * Get cookie from cache or login.
+     *
+     * @param bool $forceRefresh
+     *
+     * @return string
+     */
+    public function getCookie($forceRefresh = false)
+    {
+        $cacheKey = $this->cachePrefix . $this->stu_id;
+        $cached = $this->getCache()->fetch($cacheKey);
+        if ($forceRefresh || empty($cached)) {
+            $jar = $this->login();
+            dd($jar, 'line 91!!!');
+            dd($this->cacheCookie, 'line 92');
+            $this->getCache()->save($cacheKey, serialize($jar), 3000);
+            return $jar;
+        }
+        return unserialize($cached);
+    }
 
+    /**
+     * Set the cache manager.
+     * @param Doctrine\Common\Cache\Cache
+     * @return Lcrawl
+     */
+ 	public function setCache(Cache $cache)
+    {
+        $this->cache = $cache;
+        return $this;
+    }
 
-	public function login($stu_id, $password)
+    /**
+     * Return the cache manager.
+     * @param void 
+     * @return \Doctrine\Common\Cache\Cache
+     */
+    public function getCache()
+    {
+        return $this->cache ?: $this->cache = new FilesystemCache(sys_get_temp_dir());
+    }
+
+    /**
+     * Login, and get the cookie jar.
+     * @param void
+     * @return $this or $jar
+     */
+    public function login()
 	{	
-		$this->stu_id = $stu_id;
-		$this->password = $password;
-
 		//Get the hidden value from login page.
 		$response = $this->client->get('default_ysdx.aspx');
 		$body = $response->getBody();
@@ -84,8 +145,7 @@ class Lcrawl
 		$crawler = $crawler->filterXPath('//*[@id="form1"]/input');
 		$viewstate = $crawler->attr('value');
 
-		//Post to login
-		$response = $this->client->request('POST', 'default_ysdx.aspx', [
+		$query = [
 		     'form_params' => [
 		     	'__VIEWSTATE'      => $viewstate,
 		     	'TextBox1'         => $this->stu_id,
@@ -93,12 +153,21 @@ class Lcrawl
 		     	'RadioButtonList1' => iconv('utf-8', 'gb2312', '学生'),
 		     	'Button1'          => iconv('utf-8', 'gb2312', '登录'),
 		     ]
-		]);
+		];
+		//If set to cache cookie
+		if ($this->cacheCookie) {
+			$jar = new \GuzzleHttp\Cookie\CookieJar;
+			$query['cookies'] = $jar;
+		}
+		//Post to login
+		$response = $this->client->request('POST', 'default_ysdx.aspx', $query);
+
+		return $this->cacheCookie ? $jar : $this;
 	}
 
-	
 	/**
-	 *	By Concurrent requests, to get all the data.
+	 * By Concurrent requests, to get all the data.		
+	 * @return Array
 	 */
 	public function getAll()
 	{
@@ -122,12 +191,17 @@ class Lcrawl
 		echo "</pre>";
 
 	}
-
+	/**
+	 * Get the schedule data
+	 * @return Array
+	 */
 	public function getSchedule()
 	{
-		// Default: get the current term schedule data by GET
-		// If you want to get the other term's data, use POST
-		// TODO: use POST to get other term's data 
+		/**
+		 * Default: get the current term schedule data by GET
+		 * If you want to get the other term's data, use POST
+		 * TODO: use POST to get other term's data
+		 */ 
 		$response = $this->scheduleRequest();
 		$body = $response->getBody();
 		$data = $this->parserSchedule($body);
@@ -146,28 +220,36 @@ class Lcrawl
 		echo "</pre>";
 	}
 
+	/**
+	 * Build the schedule request.
+	 * @param type|bool $isAsync 
+	 * @return Guzzle\Client
+	 */
 	private function scheduleRequest($isAsync = false)
-	{
-		if ($isAsync) {
-			return $this->client->getAsync('xskbcx.aspx', [
+	{	
+		$query = [
 				 'query' => ['xh' => $this->stu_id]
-			]);
+			];
+		if ($this->cacheCookie) {
+			$query['cookies'] = $this->getCookie();
 		}
-		return $this->client->get('xskbcx.aspx', [
-			 'query' => ['xh' => $this->stu_id]
-		]);
+		//If use getAll(), use the Async request.
+		return $isAsync ? $this->client->getAsync('xskbcx.aspx', $query) : $this->client->get('xskbcx.aspx', $query);
 	}
-
+	/**
+	 * Build the cet request.
+	 * @param type|bool $isAsync 
+	 * @return type
+	 */
 	private function cetRequest($isAsync = false)
 	{
-		if ($isAsync) {
-			return $this->client->getAsync('xsdjkscx.aspx', [
+		$query = [
 				 'query' => ['xh' => $this->stu_id]
-			]);
+			];
+		if ($this->cacheCookie) {
+			$query['cookies'] = $this->getCookie();
 		}
-		return $this->client->get('xsdjkscx.aspx', [
-			 'query' => ['xh' => $this->stu_id]
-		]);
+		return $isAsync ? $this->client->getAsync('xsdjkscx.aspx', $query) : $this->client->get('xsdjkscx.aspx', $query);
 	}
 
 	private function parserSchedule($body)
@@ -217,5 +299,23 @@ class Lcrawl
 		//Unset the title.
 		unset($data[0]);
 		return $data;
+	}
+}
+
+/**
+ * Just a debug function
+ * @param Obeject/Array/string $arr 
+ * @return void
+ */
+function dd($arr,$hint = '')
+{
+	if (is_object($arr) || is_array($arr)) {
+		echo "<pre>";
+		print_r($arr);
+		echo PHP_EOL . $hint;
+		echo "</pre>";
+	} else {
+		var_dump($arr);
+		echo PHP_EOL . $hint;
 	}
 }
