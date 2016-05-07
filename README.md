@@ -38,7 +38,7 @@ $config = [
 
 $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, $config);
 
-//登陆
+//登陆,在cacheCookie为false的情况下，必须执行，开启缓存可省略
 $client->login();
 // $client->getSchedule();
 // $client->getCet();
@@ -48,6 +48,8 @@ $client->getAll();
 # 高级用法
 
 为达到在登陆一次后的一段时间内，不需要再次执行登陆操作便可直接获取数据，减少教务网请求量，可以使用会话缓存。
+
+首先，在实例化Lcrawl时，传入 `$config['cacheCookie' => true]` 。
 
 本项目使用 doctrine/cache 来完成缓存工作，它支持基本目前所有的缓存引擎。
 
