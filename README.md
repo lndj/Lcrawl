@@ -3,6 +3,9 @@
 [![Join the chat at https://gitter.im/lndj/Lcrawl](https://badges.gitter.im/lndj/Lcrawl.svg)](https://gitter.im/lndj/Lcrawl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
+**如果你想体验最新最优雅的功能，前往dev分支**
+https://github.com/lndj/Lcrawl/tree/dev
+
 使用PHP+MySQL实现正方教务系统爬虫功能。
 
 
