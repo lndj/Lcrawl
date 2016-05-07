@@ -101,8 +101,6 @@ class Lcrawl
         $cached = $this->getCache()->fetch($cacheKey);
         if ($forceRefresh || empty($cached)) {
             $jar = $this->login();
-            dd($jar, 'line 91!!!');
-            dd($this->cacheCookie, 'line 92');
             $this->getCache()->save($cacheKey, serialize($jar), 3000);
             return $jar;
         }

@@ -55,7 +55,6 @@ $client->getAll();
 
 在我们的 Lcrawl 中的所有缓存默认使用文件缓存，缓存路径取决于PHP的临时目录，如果你需要自定义缓存，那么你需要做如下的事情：
 
-
 ```php
 
 use Doctrine\Common\Cache\RedisCache;
