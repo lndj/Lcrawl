@@ -3,6 +3,9 @@
  * This a lib to crawl the Academic Network Systems.
  * You can easely achieve the querying of grade/schedule/cet/free classroom ...
  * @author Ning Luo <luoning@luoning.me>
+ * @link https://github.com/lndj/Lcrawl 
+ * @package lndj/Lcrawl
+ * @category spider | crawl
  * @license MIT
  */
 
@@ -12,12 +15,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Pool;
 use Symfony\Component\DomCrawler\Crawler;
-
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
-/**
-* 
-*/
+
 class Lcrawl
 {
 	private $client; 
@@ -184,6 +184,7 @@ class Lcrawl
 		echo "</pre>";
 
 	}
+
 	/**
 	 * Get the schedule data
 	 * @return Array
@@ -229,6 +230,7 @@ class Lcrawl
 		//If use getAll(), use the Async request.
 		return $isAsync ? $this->client->getAsync('xskbcx.aspx', $query) : $this->client->get('xskbcx.aspx', $query);
 	}
+	
 	/**
 	 * Build the cet request.
 	 * @param type|bool $isAsync 
