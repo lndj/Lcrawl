@@ -14,15 +14,20 @@ http://www.luoning.me/lcrawl.html
 
 # 安装
 
-使用 `composer` 进行安装：
+使用 `composer` 进行安装[待完成]：
 `composer require lndj/Lcrawl`
 
+当前，您可以clone之后，执行：
+```shell
+git checkout dev
+composer install
+```
 # Example
 
 ```php
 <?php
 
- // Require the compose autoload file
+ // Require the composer autoload file
 require './vendor/autoload.php';
 
 $stu_id = '201201148';
