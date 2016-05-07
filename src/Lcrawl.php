@@ -1,7 +1,7 @@
 <?php
 /**
  * This a lib to crawl the Academic Network Systems.
- * You can easely achieve the querying grade/schedule/cet/free classroom ...
+ * You can easely achieve the querying of grade/schedule/cet/free classroom ...
  * @author Ning Luo <luoning@luoning.me>
  * @license MIT
  */
@@ -38,6 +38,13 @@ class Lcrawl
 
 	private $cachePrefix = 'Lcrawl-';
 	
+	/**
+	 * Init Lcrawl.
+	 * @param String $base_uri 
+	 * @param Array|Object $user 
+	 * @param array $config 
+	 * @return void
+	 */
 	function __construct($base_uri, $user, $config = [])
 	{
 		//Set the base_uri.
@@ -77,22 +84,9 @@ class Lcrawl
 		}
 		$this->client = new Client($client_param);
 	}
-
-	/**
-	 * @param string $$ua Set the UserAgent to the crawler.
-	 * @return Object $this
-	 */
-	public function setUserAgent($ua)
-	{
-		$this->ua = $ua;
-		return $this;
-	}
-	
 	/**
      * Get cookie from cache or login.
-     *
      * @param bool $forceRefresh
-     *
      * @return string
      */
     public function getCookie($forceRefresh = false)
