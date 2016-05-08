@@ -2,6 +2,7 @@
 /**
  * This a lib to crawl the Academic Network Systems.
  * You can easely achieve the querying of grade/schedule/cet/free classroom ...
+ * 
  * @author Ning Luo <luoning@luoning.me>
  * @link https://github.com/lndj/Lcrawl 
  * @package lndj/Lcrawl
@@ -20,6 +21,8 @@ use Doctrine\Common\Cache\FilesystemCache;
 
 class Lcrawl
 {
+	use Parser, BuildRequest;
+
 	private $client; 
 
 	private $base_uri; //The base_uri of your Academic Network Systems. Like 'http://xuanke.lzjtu.edu.cn/'
@@ -38,13 +41,6 @@ class Lcrawl
 
 	private $cachePrefix = 'Lcrawl-';
 	
-	/**
-	 * Init Lcrawl.
-	 * @param String $base_uri 
-	 * @param Array|Object $user 
-	 * @param array $config 
-	 * @return void
-	 */
 	function __construct($base_uri, $user, $config = [])
 	{
 		//Set the base_uri.
@@ -86,16 +82,17 @@ class Lcrawl
 	}
 
 	/**
-	 * Get cookie from cache or login.
-	 * @param type|bool $forceRefresh 
-	 * @return $jar
-	 */
+     * Get cookie from cache or login.
+     * @param bool $forceRefresh
+     * @return string
+     */
     public function getCookie($forceRefresh = false)
     {
         $cacheKey = $this->cachePrefix . $this->stu_id;
         $cached = $this->getCache()->fetch($cacheKey);
         if ($forceRefresh || empty($cached)) {
             $jar = $this->login();
+            //Cache the cookieJar 3000 ms.
             $this->getCache()->save($cacheKey, serialize($jar), 3000);
             return $jar;
         }
@@ -165,24 +162,16 @@ class Lcrawl
 	public function getAll()
 	{
 		$requests = [
-		    'schedule' => $this->scheduleRequest(true),
-		    'cet'   => $this->cetRequest(true),
+		    'schedule' => $this->buildGetRequest('xskbcx.aspx', [], true),
+		    'cet' => $this->buildGetRequest('xsdjkscx.aspx', [], true),
 		];
 		$results = Promise\unwrap($requests);
 
 		//Parser the data we need.
-		$schedule = $this->parserSchedule($results['schedule']->getBody());
-		$cet = $this->parserCet($results['cet']->getBody());
+		$schedule = $this->getSchedule();
+		$cet = $this->getCet();
 		
-		//Put data in a array.
-		$all_data = [];
-		$all_data['schedule'] = $schedule;
-		$all_data['cet'] = $cet;
-
-		echo "<pre>";
-		print_r($all_data);
-		echo "</pre>";
-
+		return compact('schedule', 'cet');
 	}
 
 	/**
@@ -196,121 +185,36 @@ class Lcrawl
 		 * If you want to get the other term's data, use POST
 		 * TODO: use POST to get other term's data
 		 */ 
-		$response = $this->scheduleRequest();
-		$body = $response->getBody();
-		$data = $this->parserSchedule($body);
-		echo "<pre>";
-		print_r($data);
-		echo "</pre>";
+		$response = $this->buildGetRequest('xskbcx.aspx', []);
+		return $this->parserSchedule($response->getBody());
 	}
 
+	/**
+	 * Get the CET data.
+	 * @return type|Object
+	 */
 	public function getCet()
 	{
-		$response = $this->cetRequest();
-		$body = $response->getBody();
-		$data = $this->parserCet($body);
-		echo "<pre>";
-		print_r($data);
-		echo "</pre>";
-	}
-
-	/**
-	 * Build the schedule request.
-	 * @param type|bool $isAsync 
-	 * @return Guzzle\Client
-	 */
-	private function scheduleRequest($isAsync = false)
-	{	
-		$query = [
-				 'query' => ['xh' => $this->stu_id]
-			];
-		if ($this->cacheCookie) {
-			$query['cookies'] = $this->getCookie();
-		}
-		//If use getAll(), use the Async request.
-		return $isAsync ? $this->client->getAsync('xskbcx.aspx', $query) : $this->client->get('xskbcx.aspx', $query);
-	}
-	
-	/**
-	 * Build the cet request.
-	 * @param type|bool $isAsync 
-	 * @return type
-	 */
-	private function cetRequest($isAsync = false)
-	{
-		$query = [
-				 'query' => ['xh' => $this->stu_id]
-			];
-		if ($this->cacheCookie) {
-			$query['cookies'] = $this->getCookie();
-		}
-		return $isAsync ? $this->client->getAsync('xsdjkscx.aspx', $query) : $this->client->get('xsdjkscx.aspx', $query);
-	}
-
-	private function parserSchedule($body)
-	{
-		$crawler = new Crawler((string)$body);
-		$crawler = $crawler->filter('#Table1');
-		$schedule = $crawler->children();
-		
-		$format_arr = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-		$data = [];
-		$data_line = [];
-
-		//loop the row
-		for ($i=2; $i <= 10; $i++) { 
-			if ($i % 2 === 0) {
-				//Every 4 lines lack 1 row
-				if ($i % 4 === 0) {
-					for ($j=1; $j <= 7; $j++) { 
-						$schedule_info = $schedule->eq($i)->children()->eq($j)->html();
-						array_push($data_line, $schedule_info);
-					}	
-					continue;
-				}
-				//Loop the line
-				for ($j=2; $j <= 8; $j++) { 
-					$schedule_info = $schedule->eq($i)->children()->eq($j)->html();
-					array_push($data_line, $schedule_info);
-				}
-			}
-		}
-		//Formate the data array.
-		$data = array_chunk($data_line,5);
-		return array_combine($format_arr, $data);
-	}
-
-	private function parserCet($body)
-	{
-		$crawler = new Crawler((string)$body);
-		
-		$crawler = $crawler->filter('#DataGrid1');
-		$cet = $crawler->children();
-		$data = $cet->each(function (Crawler $node, $i) {
-		    return $node->children()->each(function (Crawler $node, $j) {
-		    	return $node->text();
-		    });
-		});
-		//Unset the title.
-		unset($data[0]);
-		return $data;
+		$response = $this->buildGetRequest('xsdjkscx.aspx', []);
+		return $this->parserCommonTable($response->getBody());
 	}
 }
 
 /**
  * Just a debug function
- * @param Obeject/Array/string $arr 
+ * @param Obeject/Array/string $arr 															
+ * @param String $hint debug hint
  * @return void
  */
 function dd($arr,$hint = '')
 {
-	if (is_object($arr) || is_array($arr)) {
-		echo "<pre>";
-		print_r($arr);
+    if (is_object($arr) || is_array($arr)) {
+        echo "<pre>";
+        print_r($arr);
 		echo PHP_EOL . $hint;
-		echo "</pre>";
-	} else {
-		var_dump($arr);
-		echo PHP_EOL . $hint;
-	}
+        echo "</pre>";
+    } else {
+        var_dump($arr);
+        echo PHP_EOL . $hint;
+    }
 }
