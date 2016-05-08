@@ -126,8 +126,8 @@ class Lcrawl
      * @return $this or $jar
      */
     public function login()
-	{	
-		//Get the hidden value from login page.
+    {	
+        //Get the hidden value from login page.
 		$response = $this->client->get('default_ysdx.aspx');
 		$body = $response->getBody();
 
