@@ -15,7 +15,6 @@ namespace Lndj;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Pool;
-use Symfony\Component\DomCrawler\Crawler;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
 
@@ -129,12 +128,7 @@ class Lcrawl
     {
         //Get the hidden value from login page.
         $response = $this->client->get('default_ysdx.aspx');
-        $body = $response->getBody();
-
-        $crawler = new Crawler((string)$body);
-        $crawler = $crawler->filterXPath('//*[@id="form1"]/input');
-        $viewstate = $crawler->attr('value');
-
+        $viewstate = $this->parserHiddenValue($response->getBody());
         $query = [
              'form_params' => [
                  '__VIEWSTATE'      => $viewstate,
@@ -150,7 +144,7 @@ class Lcrawl
             $query['cookies'] = $jar;
         }
         //Post to login
-        $response = $this->client->request('POST', 'default_ysdx.aspx', $query);
+        $this->client->request('POST', 'default_ysdx.aspx', $query);
 
         return $this->cacheCookie ? $jar : $this;
     }
