@@ -76,4 +76,15 @@ trait  Parser {
         unset($data[0]);
         return $data;
     }
+
+    /**
+     * Parser the hidden value of HTML form.
+     * @param type $body 
+     * @return type
+     */
+    public function parserHiddenValue($body)
+    {
+        $crawler = new Crawler((string)$body);
+        return $crawler->filterXPath('//*[@id="form1"]/input')->attr('value');
+    }
 }
