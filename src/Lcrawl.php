@@ -179,7 +179,7 @@ class Lcrawl
          * If you want to get the other term's data, use POST
          * TODO: use POST to get other term's data
          */
-        $response = $this->buildGetRequest('xskbcx.aspx', []);
+        $response = $this->buildGetRequest('xskbcx.aspx');
         return $this->parserSchedule($response->getBody());
     }
 
@@ -189,7 +189,7 @@ class Lcrawl
      */
     public function getCet()
     {
-        $response = $this->buildGetRequest('xsdjkscx.aspx', []);
+        $response = $this->buildGetRequest('xsdjkscx.aspx');
         return $this->parserCommonTable($response->getBody());
     }
 }
