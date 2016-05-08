@@ -7,11 +7,11 @@
         }
     ],
     "require": {
+        "php": ">=5.4.0",
         "guzzlehttp/guzzle": "~6.0",
         "symfony/dom-crawler": "^3.0",
         "symfony/css-selector": "^3.0",
-        "doctrine/cache": "^1.6",
-        "imangazaliev/didom": "^1.6"
+        "doctrine/cache": "^1.6"
     },
     "autoload": {
     	"psr-4": {
