@@ -39,7 +39,7 @@ class Lcrawl
 
 	private $cache; //Doctrine\Common\Cache\Cache
 
-	private $cachePrefix = 'Lcrawl-';
+	private $cachePrefix = 'Lcrawl';
 	
 	function __construct($base_uri, $user, $config = [])
 	{
@@ -92,8 +92,8 @@ class Lcrawl
         $cached = $this->getCache()->fetch($cacheKey);
         if ($forceRefresh || empty($cached)) {
             $jar = $this->login();
-            //Cache the cookieJar 3000 ms.
-            $this->getCache()->save($cacheKey, serialize($jar), 3000);
+            //Cache the cookieJar 3000 s.
+            $this->getCache()->save($cacheKey, serialize($jar), 1800);
             return $jar;
         }
         return unserialize($cached);
