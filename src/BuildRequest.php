@@ -27,8 +27,8 @@ trait BuildRequest {
     {
         $query_param = array_merge(['xh' => $this->stu_id], $param);
         $query = [
-                 'query' => $query_param,
-            ];
+            'query' => $query_param,
+        ];
         if ($this->cacheCookie) {
             $query['cookies'] = $this->getCookie();
         }
