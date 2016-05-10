@@ -11,17 +11,7 @@
 require 'vendor/autoload.php';
 
 use Lndj\Lcrawl;
-use GuzzleHttp\Client;
-use GuzzleHttp\Promise;
-use GuzzleHttp\Pool;
-use Symfony\Component\DomCrawler\Crawler;
-use Doctrine\Common\Cache\FileCache ;
 
-/**
- * Hhahahahhaahah
- *  
- * @example index.php this is a test file.
- */
 $stu_id = '201201148';
 $password = 'luowei2008';
 
