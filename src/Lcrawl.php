@@ -92,7 +92,7 @@ class Lcrawl
         if ($forceRefresh || empty($cached)) {
             $jar = $this->login();
             //Cache the cookieJar 3000 s.
-            $this->getCache()->save($cacheKey, serialize($jar), 1800);
+            $this->getCache()->save($cacheKey, serialize($jar), 3000);
             return $jar;
         }
         return unserialize($cached);

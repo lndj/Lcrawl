@@ -24,7 +24,9 @@ $config = [
 ];
 $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, $config);
 
-// $client->login();
+// echo sys_get_temp_dir();
+
+// dd($client->login());
 // $client->getSchedule();
 // $client->getCet();
 dd($client->getAll());
