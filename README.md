@@ -4,8 +4,6 @@
 
 使用PHP实现正方教务系统爬虫功能。
 
-Dev分支正在开发中……
-
 可能是正方教务系统最优雅的一只爬虫。
 
 #项目地址：
@@ -21,7 +19,6 @@ http://www.luoning.me/lcrawl.html
 
 当前，您可以clone之后，执行：
 ```shell
-git checkout dev
 composer install
 ```
 # Example
