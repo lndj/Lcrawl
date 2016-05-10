@@ -1,6 +1,6 @@
 <?php
 /**
- * This a test file.
+ * This is a test file.
  * 
  * @author    Ning Luo <luoning@luoning.me>
  * @copyright This code is copyright to me.
@@ -28,8 +28,6 @@ $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, $config);
 // $client->getSchedule();
 // $client->getCet();
 dd($client->getAll());
-
-
 
 /**
  * Just a debug function
