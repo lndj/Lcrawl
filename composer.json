@@ -1,9 +1,15 @@
 {
     "name": "lndj/lcrawl",
+    "type": "library",
+    "description": "一只优雅的正方教务系统爬虫。",
+    "keywords": ["wechat","正方","模拟登陆","教务系统"],
+    "homepage": "http://lcrawl.lzjtuhand.com",
+    "license": "MIT",
     "authors": [
         {
             "name": "Ning Luo",
-            "email": "luoning@luoning.me"
+            "email": "luoning@luoning.me",
+            "homepage":"http://www.luoning.me"
         }
     ],
     "require": {
