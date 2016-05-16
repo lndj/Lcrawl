@@ -18,6 +18,9 @@ use GuzzleHttp\Pool;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
 
+use Lndj\Traits\Parser;
+use Lndj\Traits\BuildRequest;
+
 class Lcrawl
 {
     use Parser, BuildRequest;

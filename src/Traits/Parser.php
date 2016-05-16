@@ -9,7 +9,7 @@
  * @license  MIT
  */ 
 
-namespace Lndj;
+namespace Lndj\Traits;
 
 use Symfony\Component\DomCrawler\Crawler;
 

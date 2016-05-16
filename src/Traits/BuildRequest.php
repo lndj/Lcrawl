@@ -9,7 +9,7 @@
  * @license  MIT
  */ 
 
-namespace Lndj;
+namespace Lndj\Traits;
 
 /**
  * This is a trait to build get & post request.
