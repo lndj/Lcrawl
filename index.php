@@ -15,16 +15,11 @@ use Lndj\Lcrawl;
 //stu_id
 $stu_id = '201201148';
 //your password 
-$password = 'xxxxxx';
+$password = 'luowei2008';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
-$config = [
-    'ua' => 'Lzjtuxzs Spider v2.0.0',
-    'timeout' => 5.0,
-    'cacheCookie' => true,
-    'cachePrefix' => 'Luonning-'
-];
-$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, $config);
+
+$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, true);
 
 // echo sys_get_temp_dir();
 

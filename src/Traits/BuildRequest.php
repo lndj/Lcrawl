@@ -16,18 +16,20 @@ namespace Lndj\Traits;
  */
 trait BuildRequest {
 
-    /**
-     * Build the get request.
-     * @param type $uri 
-     * @param type|array $param 
-     * @param type|bool $isAsync 
-     * @return type
-     */
-    public function buildGetRequest($uri, $param = [], $isAsync = false)
+   /**
+    * Build the get request.
+    * @param type|string $uri 
+    * @param type|array $param 
+    * @param type|array $headers 
+    * @param type|bool $isAsync 
+    * @return type
+    */
+    public function buildGetRequest($uri, $param = [], $headers = [], $isAsync = false)
     {
         $query_param = array_merge(['xh' => $this->stu_id], $param);
         $query = [
             'query' => $query_param,
+            'headers' => $headers,
         ];
         if ($this->cacheCookie) {
             $query['cookies'] = $this->getCookie();
@@ -38,7 +40,7 @@ trait BuildRequest {
         : $this->client->get($uri, $query);
     }
 
-    public function buildPostRequest($uri, $param, $isAsync = false)
+    public function buildPostRequest($uri, $param, $headers = [], $isAsync = false)
     {
         //TODO
     }
