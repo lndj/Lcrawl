@@ -182,7 +182,7 @@ class Lcrawl
         $this->headers['referer'] = $referer;
         return $this;
     }
-    
+
     /**
      * Get the Referer header.
      * @return type
@@ -211,6 +211,8 @@ class Lcrawl
         //Get the hidden value from login page.
         $response = $this->client->get($this->login_uri);
         $viewstate = $this->parserHiddenValue($response->getBody());
+
+        //TODO For different login uri, use different key.
         $query = [
              'form_params' => [
                  '__VIEWSTATE'      => $viewstate,
