@@ -80,6 +80,7 @@ class Lcrawl
 
     /**
      * Get cookie from cache or login.
+     * 
      * @param bool $forceRefresh
      * @return string
      */
@@ -98,6 +99,7 @@ class Lcrawl
 
     /**
      * Set the cache manager.
+     * 
      * @param Doctrine\Common\Cache\Cache
      * @return Lcrawl
      */
@@ -109,6 +111,7 @@ class Lcrawl
 
     /**
      * Return the cache manager.
+     * 
      * @param void
      * @return \Doctrine\Common\Cache\Cache
      */
@@ -119,6 +122,7 @@ class Lcrawl
 
     /**
      * Set the UserAgent.
+     * 
      * @param string $ua 
      * @return Object $this
      */
@@ -130,6 +134,7 @@ class Lcrawl
 
     /**
      * Get the User-Agent value.
+     * 
      * @return type
      */
     public function getUa()
@@ -139,6 +144,7 @@ class Lcrawl
 
     /**
      * Set the Timeout.
+     * 
      * @param type $time 
      * @return type
      */
@@ -153,7 +159,18 @@ class Lcrawl
     }
 
     /**
+     * Get the Timeout.
+     * 
+     * @return type
+     */
+    public function getTimeOut()
+    {
+        return $this->headers['timeout'];
+    }
+
+    /**
      * Set the Login uri. The default uri is default_ysdx.aspx.
+     * 
      * @param type $uri 
      * @return type
      */
@@ -165,6 +182,7 @@ class Lcrawl
 
     /**
      * Get the login uri.
+     * 
      * @return type
      */
     public function getLoginUri()
@@ -174,6 +192,7 @@ class Lcrawl
 
     /**
      * Set the Referer header.
+     * 
      * @param type $referer 
      * @return type
      */
@@ -185,6 +204,7 @@ class Lcrawl
 
     /**
      * Get the Referer header.
+     * 
      * @return type
      */
     public function getReferer()
@@ -193,13 +213,27 @@ class Lcrawl
     }
 
     /**
-     * Get the Timeout.
+     * Set the cache cookie prefix, default is Lcrawl.
+     * 
+     * @param type $prefix 
      * @return type
      */
-    public function getTimeOut()
+    public function setCachePrefix($prefix)
     {
-        return $this->headers['timeout'];
+        $this->cachePrefix = $prefix;
+        return $this;
     }
+
+    /**
+     * Get the cache cookie prefix, default is Lcrawl.
+     * 
+     * @return type
+     */
+    public function getCachePrefix()
+    {
+        return $this->cachePrefix;
+    }
+
 
     /**
      * Login, and get the cookie jar.
