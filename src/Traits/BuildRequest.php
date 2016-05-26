@@ -18,6 +18,7 @@ trait BuildRequest {
 
    /**
     * Build the get request.
+    * 
     * @param type|string $uri 
     * @param type|array $param 
     * @param type|array $headers 

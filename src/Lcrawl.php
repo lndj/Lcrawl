@@ -237,6 +237,7 @@ class Lcrawl
 
     /**
      * Login, and get the cookie jar.
+     * 
      * @param void
      * @return $this or $jar
      */
@@ -269,6 +270,7 @@ class Lcrawl
 
     /**
      * By Concurrent requests, to get all the data.
+     * 
      * @return Array
      */
     public function getAll()
@@ -288,6 +290,7 @@ class Lcrawl
 
     /**
      * Get the schedule data
+     * 
      * @return Array
      */
     public function getSchedule()
@@ -314,6 +317,7 @@ class Lcrawl
 
 /**
  * Just a debug function
+ * 
  * @param Obeject/Array/string $arr
  * @param String $hint debug hint
  * @return void
