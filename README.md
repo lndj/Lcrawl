@@ -14,7 +14,7 @@ http://www.luoning.me/lcrawl.html
 
 # 安装
 
-使用 `composer` 进行安装[待完成]：
+使用 `composer` 进行安装：
 `composer require lndj/lcrawl`
 
 当前，您可以clone之后，执行：

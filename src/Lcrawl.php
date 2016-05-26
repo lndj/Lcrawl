@@ -29,9 +29,14 @@ class Lcrawl
 
     private $base_uri; //The base_uri of your Academic Network Systems. Like 'http://xuanke.lzjtu.edu.cn/'
 
-    private $timeout = 3.0;
+    private $login_uri = 'default_ysdx.aspx';
 
-    private $ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36';
+    private $headers = [
+        'timeout'      => 3.0,
+        'User-Agent'   => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36',
+        'Accept'       => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Content-Type' => 'application/x-www-form-urlencoded'
+    ];
 
     private $stu_id;
 
@@ -43,7 +48,7 @@ class Lcrawl
 
     private $cachePrefix = 'Lcrawl';
 
-    function __construct($base_uri, $user, $config = [])
+    function __construct($base_uri, $user, $isCacheCookie = false)
     {
         //Set the base_uri.
         $this->base_uri = $base_uri;
@@ -58,24 +63,14 @@ class Lcrawl
         } else {
             throw new Exception("You must give Lcrawl the user info, like ['stu_id' => '2012xxxxx', 'stu_pwd' => 'xxxx']", 1);
         }
-        //Set the config, like cacheCookie/UA/Timeout
-        if (!empty($config)) {
-            foreach ($config as $con => $value) {
-                $this->$con = $value;
-            }
-        }
         $client_param = [
             // Base URI is used with relative requests
             'base_uri' => $this->base_uri,
-            // You can set any number of default request options.
-            'timeout'  => $this->timeout,
-            'headers' => [
-                'User-Agent'   => $this->ua,
-                'Accept'       => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Referer'      => $this->base_uri . 'default_ysdx.aspx',
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ],
         ];
+
+        //If this value is true, Lcrawl will cache the cookie jar when logining.
+        $this->cacheCookie = $isCacheCookie;
+
         //If don't cache cookies, set cookies true, every request use cookie by default way.
         if (!$this->cacheCookie) {
             $client_param['cookies'] = true;
@@ -85,6 +80,7 @@ class Lcrawl
 
     /**
      * Get cookie from cache or login.
+     * 
      * @param bool $forceRefresh
      * @return string
      */
@@ -103,6 +99,7 @@ class Lcrawl
 
     /**
      * Set the cache manager.
+     * 
      * @param Doctrine\Common\Cache\Cache
      * @return Lcrawl
      */
@@ -114,6 +111,7 @@ class Lcrawl
 
     /**
      * Return the cache manager.
+     * 
      * @param void
      * @return \Doctrine\Common\Cache\Cache
      */
@@ -123,15 +121,133 @@ class Lcrawl
     }
 
     /**
+     * Set the UserAgent.
+     * 
+     * @param string $ua 
+     * @return Object $this
+     */
+    public function setUa($ua)
+    {
+        $this->headers['User-Agent'] = $ua;
+        return $this;
+    }
+
+    /**
+     * Get the User-Agent value.
+     * 
+     * @return type
+     */
+    public function getUa()
+    {
+        return $this->headers['User-Agent'];
+    }
+
+    /**
+     * Set the Timeout.
+     * 
+     * @param type $time 
+     * @return type
+     */
+    public function setTimeOut($time)
+    {
+        if (!is_numeric($time)) {
+            //Should throw a Exception?
+            renturn;
+        }
+        $this->headers['timeout'] = $time;
+        return $this;
+    }
+
+    /**
+     * Get the Timeout.
+     * 
+     * @return type
+     */
+    public function getTimeOut()
+    {
+        return $this->headers['timeout'];
+    }
+
+    /**
+     * Set the Login uri. The default uri is default_ysdx.aspx.
+     * 
+     * @param type $uri 
+     * @return type
+     */
+    public function setLoginUri($uri)
+    {
+        $this->login_uri = $uri;
+        return $this;
+    }
+
+    /**
+     * Get the login uri.
+     * 
+     * @return type
+     */
+    public function getLoginUri()
+    {
+        return $this->login_uri;
+    }
+
+    /**
+     * Set the Referer header.
+     * 
+     * @param type $referer 
+     * @return type
+     */
+    public function setReferer($referer)
+    {
+        $this->headers['referer'] = $referer;
+        return $this;
+    }
+
+    /**
+     * Get the Referer header.
+     * 
+     * @return type
+     */
+    public function getReferer()
+    {
+        return $this->headers['Referer'];
+    }
+
+    /**
+     * Set the cache cookie prefix, default is Lcrawl.
+     * 
+     * @param type $prefix 
+     * @return type
+     */
+    public function setCachePrefix($prefix)
+    {
+        $this->cachePrefix = $prefix;
+        return $this;
+    }
+
+    /**
+     * Get the cache cookie prefix, default is Lcrawl.
+     * 
+     * @return type
+     */
+    public function getCachePrefix()
+    {
+        return $this->cachePrefix;
+    }
+
+
+    /**
      * Login, and get the cookie jar.
+     * 
      * @param void
      * @return $this or $jar
      */
     public function login()
     {
         //Get the hidden value from login page.
-        $response = $this->client->get('default_ysdx.aspx');
+        $response = $this->client->get($this->login_uri);
         $viewstate = $this->parserHiddenValue($response->getBody());
+
+        //TODO For different login uri, use different key.
         $query = [
              'form_params' => [
                  '__VIEWSTATE'      => $viewstate,
@@ -147,20 +263,21 @@ class Lcrawl
             $query['cookies'] = $jar;
         }
         //Post to login
-        $this->client->request('POST', 'default_ysdx.aspx', $query);
+        $this->client->request('POST', $this->login_uri, $query);
 
         return $this->cacheCookie ? $jar : $this;
     }
 
     /**
      * By Concurrent requests, to get all the data.
+     * 
      * @return Array
      */
     public function getAll()
     {
         $requests = [
-            'schedule' => $this->buildGetRequest('xskbcx.aspx', [], true),
-            'cet' => $this->buildGetRequest('xsdjkscx.aspx', [], true),
+            'schedule' => $this->buildGetRequest('xskbcx.aspx', [], $this->headers, true),
+            'cet' => $this->buildGetRequest('xsdjkscx.aspx', [], $this->headers, true),
         ];
         $results = Promise\unwrap($requests);
 
@@ -173,6 +290,7 @@ class Lcrawl
 
     /**
      * Get the schedule data
+     * 
      * @return Array
      */
     public function getSchedule()
@@ -182,7 +300,7 @@ class Lcrawl
          * If you want to get the other term's data, use POST
          * TODO: use POST to get other term's data
          */
-        $response = $this->buildGetRequest('xskbcx.aspx');
+        $response = $this->buildGetRequest('xskbcx.aspx', [], $this->headers);
         return $this->parserSchedule($response->getBody());
     }
 
@@ -199,6 +317,7 @@ class Lcrawl
 
 /**
  * Just a debug function
+ * 
  * @param Obeject/Array/string $arr
  * @param String $hint debug hint
  * @return void

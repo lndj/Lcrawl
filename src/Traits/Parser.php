@@ -19,6 +19,7 @@ use Symfony\Component\DomCrawler\Crawler;
 trait  Parser {
     /**
      * Paser the schedule data.
+     * 
      * @param Object $body 
      * @return Array
      */
@@ -57,6 +58,7 @@ trait  Parser {
 
     /**
      * Parser the common table, like grade, cet, chooseClass, etc.
+     * 
      * @param type|Object $body 
      * @param type|string $selector 
      * @return array
@@ -79,6 +81,7 @@ trait  Parser {
 
     /**
      * Parser the hidden value of HTML form.
+     * 
      * @param type $body 
      * @return type
      */

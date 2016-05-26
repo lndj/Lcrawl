@@ -15,23 +15,22 @@ use Lndj\Lcrawl;
 //stu_id
 $stu_id = '201201148';
 //your password 
-$password = 'xxxxxx';
+$password = 'xxxx';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
-$config = [
-    'ua' => 'Lzjtuxzs Spider v2.0.0',
-    'timeout' => 5.0,
-    'cacheCookie' => true,
-    'cachePrefix' => 'Luonning-'
-];
-$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, $config);
 
-// echo sys_get_temp_dir();
+$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, true);
+
+$all = $client->setUa('Lcrawl Spider V2.0.2')->getAll();
+//setTimeOut()
+//setReferer
+//set...
+dd($all);
 
 // dd($client->login());
 // $client->getSchedule();
 // $client->getCet();
-dd($client->getAll());
+
 
 /**
  * Just a debug function
