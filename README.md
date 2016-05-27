@@ -17,10 +17,13 @@ http://www.luoning.me/lcrawl.html
 使用 `composer` 进行安装：
 `composer require lndj/lcrawl`
 
-当前，您可以clone之后，执行：
+要体验最新功能，可以执行：
 ```shell
+git clone https://github.com/lndj/Lcrawl.git
+cd Lcrawl
 composer install
 ```
+> 注意：请先安装 `composer`
 # Example
 
 ```php
@@ -33,22 +36,21 @@ $stu_id = '201201148';
 $password = 'xxxxxxxx';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
-$config = [
-    'ua' => 'Lzjtuxzs Spider v2.0.0', //设置UA
-    'timeout' => 5.0, //超时时间
-    'cacheCookie' => false, //是否缓存cookies
-    'cachePrefix' => 'Luonning-' //缓存前缀
-];
 
-$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, $config);
+$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user);
 
-//登陆,在cacheCookie为false的情况下，必须执行，开启缓存可省略
-$client->login();
+//获取所有数据
+$all = $client->setUa('Lcrawl Spider V2.0.2')->getAll();
+
+
 // $client->getSchedule();
 // $client->getCet();
-//获取所有数据
-$client->getAll();
+
+
 ``` 
+
+在请求过程中，你还可以设计`Referer/Timeout`等`header`信息，直接采用链式调用即可。
+
 # 高级用法
 
 为达到在登陆一次后的一段时间内，不需要再次执行登陆操作便可直接获取数据，减少教务网请求量，可以使用会话缓存。
