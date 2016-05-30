@@ -31,6 +31,8 @@ class Lcrawl
 
     private $login_uri = 'default_ysdx.aspx';
 
+    private $main_page_uri = 'xs_main.aspx';
+
     private $headers = [
         'timeout'      => 3.0,
         'User-Agent'   => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36',
@@ -263,9 +265,22 @@ class Lcrawl
             $query['cookies'] = $jar;
         }
         //Post to login
-        $this->client->request('POST', $this->login_uri, $query);
+        $result = $this->client->request('POST', $this->login_uri, $query);
 
-        return $this->cacheCookie ? $jar : $this;
+        //Is logining successful?
+        $response = $this->client->get($this->main_page_uri, ['allow_redirects' => false, 'query' => ['xh' => $this->stu_id]]);
+
+        switch ($response->getStatusCode()) {
+            case 200:
+                return $this->cacheCookie ? $jar : $this;
+                break;
+            case 302:
+                throw new Exception('The password is wrong!', 1);
+                break;
+            default:
+                throw new Exception('Maybe the data source is broken!', 1);
+                break;
+        }
     }
 
     /**

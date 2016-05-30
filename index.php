@@ -15,11 +15,12 @@ use Lndj\Lcrawl;
 //stu_id
 $stu_id = '201201148';
 //your password 
-$password = 'xxxx';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
 
-$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, true);
+$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, false);
+
+$client->login();
 
 $all = $client->setUa('Lcrawl Spider V2.0.2')->getAll();
 //setTimeOut()
