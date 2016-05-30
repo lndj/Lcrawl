@@ -296,10 +296,10 @@ class Lcrawl
                 return $this->cacheCookie ? $jar : $this;
                 break;
             case 302:
-                throw new Exception('The password is wrong!', 1);
+                throw new \Exception('The password is wrong!', 1);
                 break;
             default:
-                throw new Exception('Maybe the data source is broken!', 1);
+                throw new \Exception('Maybe the data source is broken!', 1);
                 break;
         }
     }
