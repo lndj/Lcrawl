@@ -236,6 +236,27 @@ class Lcrawl
         return $this->cachePrefix;
     }
 
+    /**
+     * Set the main page uri, the default value is 'xs_main.aspx'
+     * 
+     * @param string $uri 
+     * @return type
+     */
+    public function setMainPageUri($uri)
+    {
+        $this->main_page_uri = $uri;
+        return $this;
+    }
+
+    /**
+     * Get the main page uri, the default value is 'xs_main.aspx'
+     * 
+     * @return string
+     */
+    public function getMainPageUri()
+    {
+        return  $this->main_page_uri;
+    }
 
     /**
      * Login, and get the cookie jar.
