@@ -61,6 +61,8 @@ $all = $client->setUa('Lcrawl Spider V2.0.2')->getAll();
 ```php
 //实例化过程中传入第三个值
 $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, true);
+
+$all = $client->setUa('Lcrawl Spider V2.0.2')->setTimeOut(3.0)->getAll();
 ```
 
 # 高级用法
