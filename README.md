@@ -40,6 +40,9 @@ $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
 
 $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user);
 
+//登陆
+$client->login();
+
 //获取所有数据
 $all = $client->setUa('Lcrawl Spider V2.0.2')->getAll();
 
