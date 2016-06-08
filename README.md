@@ -40,7 +40,7 @@ $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
 
 $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user);
 
-//登陆
+//登陆 -- 没有开启会话缓存，必须调用登陆方法。
 $client->login();
 
 //获取所有数据
