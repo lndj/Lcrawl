@@ -69,7 +69,15 @@ $all = $client->setUa('Lcrawl Spider V2.0.2')->setTimeOut(3.0)->getAll();
 
 为达到在登陆一次后的一段时间内，不需要再次执行登陆操作便可直接获取数据，减少教务网请求量，可以使用会话缓存。
 
-首先，在实例化Lcrawl时，传入 `$config['cacheCookie']=> true;` 。
+首先，在实例化Lcrawl时，传入第三个参数为 `true` 。
+例如：
+
+```php
+//实例化过程中传入第三个值
+$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, true);
+```
+
+第三个参数即表示开启会话缓存。
 
 本项目使用 doctrine/cache 来完成缓存工作，它支持基本目前所有的缓存引擎。
 
