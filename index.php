@@ -15,7 +15,7 @@ use Lndj\Lcrawl;
 //stu_id
 $stu_id = '201404739';
 //your password 
-$password = 'Lynn123069';
+$password = 'xxxxxx';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
 
