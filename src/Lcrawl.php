@@ -316,12 +316,17 @@ class Lcrawl
             'cet' => $this->buildGetRequest('xsdjkscx.aspx', [], $this->headers, true),
             'exam' => $this->buildGetRequest('xskscx.aspx', [], $this->headers, true),
         ];
+        // Wait on all of the requests to complete. Throws a ConnectException
+        // if any of the requests fail
         $results = Promise\unwrap($requests);
 
+        // Wait for the requests to complete, even if some of them fail
+        // $results = Promise\settle($promises)->wait();
+
         //Parser the data we need.
-        $schedule = $this->getSchedule();
-        $cet = $this->getCet();
-        $exam = $this->getExam();
+        $schedule = $this->parserSchedule($results['schedule']->getBody());
+        $cet = $this->parserCommonTable($results['cet']->getBody());
+        $exam = $this->parserCommonTable($results['exam']->getBody());
 
         return compact('schedule', 'cet', 'exam');
     }
