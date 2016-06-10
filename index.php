@@ -13,9 +13,9 @@ require 'vendor/autoload.php';
 use Lndj\Lcrawl;
 
 //stu_id
-$stu_id = '201201148';
+$stu_id = '201404739';
 //your password 
-$password = 'xxx';
+$password = 'Lynn123069';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
 

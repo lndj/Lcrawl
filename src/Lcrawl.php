@@ -314,14 +314,16 @@ class Lcrawl
         $requests = [
             'schedule' => $this->buildGetRequest('xskbcx.aspx', [], $this->headers, true),
             'cet' => $this->buildGetRequest('xsdjkscx.aspx', [], $this->headers, true),
+            'exam' => $this->buildGetRequest('xskscx.aspx', [], $this->headers, true),
         ];
         $results = Promise\unwrap($requests);
 
         //Parser the data we need.
         $schedule = $this->getSchedule();
         $cet = $this->getCet();
+        $exam = $this->getExam();
 
-        return compact('schedule', 'cet');
+        return compact('schedule', 'cet', 'exam');
     }
 
     /**
@@ -347,6 +349,18 @@ class Lcrawl
     public function getCet()
     {
         $response = $this->buildGetRequest('xsdjkscx.aspx');
+        return $this->parserCommonTable($response->getBody());
+    }
+
+    /**
+     * Get the default term exam data by GET.
+     * If We need another term's data, use POST. //TODO
+     * 
+     * @return type
+     */
+    public function getExam()
+    {
+        $response = $this->buildGetRequest('xskscx.aspx');
         return $this->parserCommonTable($response->getBody());
     }
 }
