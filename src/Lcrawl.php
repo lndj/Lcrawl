@@ -321,7 +321,7 @@ class Lcrawl
         $results = Promise\unwrap($requests);
 
         // Wait for the requests to complete, even if some of them fail
-        // $results = Promise\settle($promises)->wait();
+        // $results = Promise\settle($requests)->wait();
 
         //Parser the data we need.
         $schedule = $this->parserSchedule($results['schedule']->getBody());
