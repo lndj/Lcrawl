@@ -335,8 +335,8 @@ class Lcrawl
     {
         $uri = 'xscjcx.aspx';
 
-        $viewstate = $this->buildGetRequest($uri, [], $this->headers);
-        //TODO Parser the veiwdate
+        $response = $this->buildGetRequest($uri, [], $this->headers);
+        $viewstate = $this->parserHiddenValue($response->getBody());
 
         $post['__EVENTTARGET'] = '';
         $post['__EVENTARGUMENT'] = '';
@@ -349,6 +349,7 @@ class Lcrawl
         $post = http_build_query($post);
 
         $response = $this->buildPostRequest($uri, [], $post, $this->headers);
+        return $this->parserCommonTable($response->getBody());
     }
 
     /**
