@@ -41,8 +41,24 @@ trait BuildRequest {
         : $this->client->get($uri, $query);
     }
 
-    public function buildPostRequest($uri, $param, $headers = [], $isAsync = false)
+    public function buildPostRequest($uri, $query, $param, $headers = [], $isAsync = false)
     {
         //TODO
+        $query_param = array_merge(['xh' => $this->stu_id], $query);
+        $post = [
+            'query' => $query_param,
+            'headers' => $headers,
+            'form_params' => $param,
+        ];
+
+        //If opened cookie cache
+        if ($this->cacheCookie) {
+            $post['cookies'] = $this->getCookie();
+        }
+
+        //If use getAll(), use the Async request.
+        return $isAsync 
+        ? $this->client->postAsync($uri, $post) 
+        : $this->client->post($uri, $post);
     }
 }

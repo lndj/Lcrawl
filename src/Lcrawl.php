@@ -331,6 +331,26 @@ class Lcrawl
         return compact('schedule', 'cet', 'exam');
     }
 
+    public function getGrade()
+    {
+        $uri = 'xscjcx.aspx';
+
+        $viewstate = $this->buildGetRequest($uri, [], $this->headers);
+        //TODO Parser the veiwdate
+
+        $post['__EVENTTARGET'] = '';
+        $post['__EVENTARGUMENT'] = '';
+        $post['__VIEWSTATE'] = $viewstate;
+        $post['hidLanguage'] = '';
+        $post['ddlXN'] = '';
+        $post['ddlXQ'] = '';
+        $post['ddl_kcxz'] = '';
+        $post['btn_zcj'] = iconv('utf-8', 'gb2312', '历年成绩');
+        $post = http_build_query($post);
+
+        $response = $this->buildPostRequest($uri, [], $post, $this->headers);
+    }
+
     /**
      * Get the schedule data
      * 
