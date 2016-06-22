@@ -57,7 +57,7 @@ trait  Parser {
     }
 
     /**
-     * Parser the common table, like grade, cet, chooseClass, etc.
+     * Parser the common table, like cet, chooseClass, etc.
      * 
      * @param type|Object $body 
      * @param type|string $selector 
@@ -89,5 +89,17 @@ trait  Parser {
     {
         $crawler = new Crawler((string)$body);
         return $crawler->filterXPath('//*[@id="form1"]/input')->attr('value');
+    }
+
+    /**
+     * When get Grade info, the hidden value is not same as login page.
+     * 
+     * @param type $body 
+     * @return type
+     */
+    public function parserOthersHiddenValue($body)
+    {
+        $crawler = new Crawler((string)$body);
+        return $crawler->filterXPath('//*[@id="Form1"]/input[3]')->attr('value');
     }
 }

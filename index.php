@@ -15,7 +15,7 @@ use Lndj\Lcrawl;
 //stu_id
 $stu_id = '201404739';
 //your password 
-$password = 'xxxxxx';
+$password = 'xxxxx';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
 
@@ -23,7 +23,7 @@ $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, false);
 
 $client->login();
 
-$all = $client->setUa('Lcrawl Spider V2.0.2')->getAll();
+$all = $client->setUa('Lcrawl Spider V2.0.2')->getGrade();
 //setTimeOut()
 //setReferer
 //set...

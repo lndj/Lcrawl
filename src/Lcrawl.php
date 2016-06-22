@@ -335,8 +335,9 @@ class Lcrawl
     {
         $uri = 'xscjcx.aspx';
 
+        //Get the hidden value.
         $response = $this->buildGetRequest($uri, [], $this->headers);
-        $viewstate = $this->parserHiddenValue($response->getBody());
+        $viewstate = $this->parserOthersHiddenValue($response->getBody());
 
         $post['__EVENTTARGET'] = '';
         $post['__EVENTARGUMENT'] = '';
@@ -346,10 +347,11 @@ class Lcrawl
         $post['ddlXQ'] = '';
         $post['ddl_kcxz'] = '';
         $post['btn_zcj'] = iconv('utf-8', 'gb2312', '历年成绩');
-        $post = http_build_query($post);
 
         $response = $this->buildPostRequest($uri, [], $post, $this->headers);
-        return $this->parserCommonTable($response->getBody());
+
+        dd((string)$response->getBody());
+        return $this->parserCommonTable($response->getBody(), 'Datagrid1');
     }
 
     /**
