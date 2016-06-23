@@ -331,6 +331,11 @@ class Lcrawl
         return compact('schedule', 'cet', 'exam');
     }
 
+    /**
+     * Get the grade data. This function is request all of grade.
+     * 
+     * @return type
+     */
     public function getGrade()
     {
         $uri = 'xscjcx.aspx';
@@ -350,7 +355,6 @@ class Lcrawl
 
         $response = $this->buildPostRequest($uri, [], $post, $this->headers);
 
-        // dd((string)$response->getBody());
         return $this->parserCommonTable($response->getBody(), '#Datagrid1');
     }
 
