@@ -350,8 +350,8 @@ class Lcrawl
 
         $response = $this->buildPostRequest($uri, [], $post, $this->headers);
 
-        dd((string)$response->getBody());
-        return $this->parserCommonTable($response->getBody(), 'Datagrid1');
+        // dd((string)$response->getBody());
+        return $this->parserCommonTable($response->getBody(), '#Datagrid1');
     }
 
     /**
