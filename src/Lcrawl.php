@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a lib to crawl the Academic Network Systems.
- * You can easely achieve the querying of grade/schedule/cet/free classroom ...
+ * You can achieve easely the querying of grade/schedule/cet/free classroom ...
  *
  * @author Ning Luo <luoning@luoning.me>
  * @link https://github.com/lndj/Lcrawl
