@@ -53,7 +53,7 @@ $all = $client->setUa('Lcrawl Spider V2.0.2')->getAll();
 
 ``` 
 
-在请求过程中，你还可以设计`Referer/Timeout`等`header`信息，直接采用链式调用即可。
+在请求过程中，你还可以设置 `Referer/Timeout` 等 `header` 信息，直接采用链式调用即可。
 
 # 会话缓存
 
