@@ -103,6 +103,36 @@ $client->setCache($cacheDriver);
 > 以 redis 为例
 > 请先安装 redis 拓展：https://github.com/phpredis/phpredis
 
+### API
+
+#### getAll()
+
+获取所有数据
+
+#### getSchedule()
+
+获取课表数据
+
+#### getGrade()
+
+获取成绩数据
+
+##### getCet()
+
+获取四六级数据
+
+#### getExam()
+
+获取考试安排数据
+
+#### `setX()` 类
+
+设置相应 `Header` 值，例如： `setUa()/setTimeout()/setReferer()` 等。
+
+#### `getX()`类
+
+Getter.
+
 ### Laravel 中使用
 
 在 Laravel 中框架使用 `predis/predis` ，那么我们就得使用 `Doctrine\Common\Cache\PredisCache`：
