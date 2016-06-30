@@ -105,23 +105,23 @@ $client->setCache($cacheDriver);
 
 ### API
 
-#### getAll()
+#### `getAll()`
 
 获取所有数据
 
-#### getSchedule()
+#### `getSchedule()`
 
 获取课表数据
 
-#### getGrade()
+#### `getGrade()`
 
 获取成绩数据
 
-##### getCet()
+##### `getCet()`
 
 获取四六级数据
 
-#### getExam()
+#### `getExam()`
 
 获取考试安排数据
 
