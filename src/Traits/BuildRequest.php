@@ -43,7 +43,6 @@ trait BuildRequest {
 
     public function buildPostRequest($uri, $query, $param, $headers = [], $isAsync = false)
     {
-        //TODO
         $query_param = array_merge(['xh' => $this->stu_id], $query);
         $post = [
             'query' => $query_param,
