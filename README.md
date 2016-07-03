@@ -34,6 +34,7 @@ composer install
 require './vendor/autoload.php';
 
 $stu_id = '201201148';
+//Notice: This is NOT test account!!!
 $password = 'xxxxxxxx';
 
 $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
