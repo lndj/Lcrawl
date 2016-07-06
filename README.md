@@ -118,7 +118,7 @@ $client->setCache($cacheDriver);
 
 获取成绩数据
 
-##### `getCet()`
+#### `getCet()`
 
 获取四六级数据
 
