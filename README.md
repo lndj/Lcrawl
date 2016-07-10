@@ -102,7 +102,31 @@ $client->setCache($cacheDriver);
 ```
 你可以参考doctrine/cache官方文档来替换掉应用中默认的缓存配置：
 > 以 redis 为例
+
 > 请先安装 redis 拓展：https://github.com/phpredis/phpredis
+
+
+#### 设置登录过程参数
+
+本SDK默认使用的是 `ysdx_default.aspx` 为登陆的 `uri` 。若要使用其他 `uri` ，可自行抓包获取登录过程的参数。
+
+在实例化时，传入第四个参数， `$loginParam`
+
+```php
+
+$loginParam = [
+    'viewstate' => '__VIEWSTATE', //隐藏域字段名称
+    'stu_id' => 'TextBox1', //学号字段名称
+    'passwod' => 'TextBox2', //密码字段
+    'role' => 'RadioButtonList1', //角色
+    'button' => 'Button1' //按钮
+];
+
+$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, true, $loginParam);
+
+//other code...
+```
+
 
 ### API
 
