@@ -34,6 +34,18 @@ dd($all);
 // $client->getCet();
 
 
+//Set the login post param
+
+/*
+[
+    'viewstate' => '__VIEWSTATE',
+    'stu_id' => 'TextBox1',
+    'passwod' => 'TextBox2',
+    'role' => 'RadioButtonList1',
+    'button' => 'Button1'
+]
+*/
+
 /**
  * Just a debug function
  * @param Obeject/Array/string $arr                                                             
