@@ -50,7 +50,10 @@ class Lcrawl
 
     private $cachePrefix = 'Lcrawl';
 
-    function __construct($base_uri, $user, $isCacheCookie = false)
+    //The login post param
+    private $loginParam = [];
+
+    function __construct($base_uri, $user, $isCacheCookie = false, $loginParam = [])
     {
         //Set the base_uri.
         $this->base_uri = $base_uri;
@@ -77,6 +80,12 @@ class Lcrawl
         if (!$this->cacheCookie) {
             $client_param['cookies'] = true;
         }
+
+        //Set the login post param
+        if (!empty($loginParam)){
+            $this->loginParam = $loginParam;
+        }
+
         $this->client = new Client($client_param);
     }
 
@@ -271,15 +280,32 @@ class Lcrawl
         $viewstate = $this->parserHiddenValue($response->getBody());
 
         //TODO For different login uri, use different key.
-        $query = [
-             'form_params' => [
-                 '__VIEWSTATE'      => $viewstate,
-                 'TextBox1'         => $this->stu_id,
-                 'TextBox2'           => $this->password,
-                 'RadioButtonList1' => iconv('utf-8', 'gb2312', '学生'),
-                 'Button1'          => iconv('utf-8', 'gb2312', '登录'),
-             ]
+
+        //The default login post param
+        $loginParam = [
+            'viewstate' => '__VIEWSTATE',
+            'stu_id' => 'TextBox1',
+            'passwod' => 'TextBox2',
+            'role' => 'RadioButtonList1',
+            'button' => 'Button1'
         ];
+
+        if (!empty($this->loginParam)){
+            $loginParam = $this->loginParam;
+        }
+
+        $form_params = [
+            $loginParam['viewstate'] => $viewstate,
+            $loginParam['stu_id'] => $this->stu_id,
+            $loginParam['passwod'] => $this->password,
+            $loginParam['role'] => iconv('utf-8', 'gb2312', '学生'),
+            $loginParam['button'] => iconv('utf-8', 'gb2312', '登录'),
+        ];
+
+        $query = [
+             'form_params' => $form_params
+        ];
+
         //If set to cache cookie
         if ($this->cacheCookie) {
             $jar = new \GuzzleHttp\Cookie\CookieJar;
