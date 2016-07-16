@@ -25,6 +25,18 @@ class Lcrawl
 {
     use Parser, BuildRequest;
 
+    //成绩查询uri
+    const ZF_GRADE_URI = 'xscjcx.aspx';
+
+    //考试查询uri
+    const ZF_EXAM_URI = 'xskscx.aspx';
+
+    //四六级成绩查询uri
+    const ZF_CET_URI = 'xsdjkscx.aspx';
+
+    //课表查询uri
+    const ZF_SCHEDULE_URI = 'xskbcx.aspx';
+
     private $client;
 
     private $base_uri; //The base_uri of your Academic Network Systems. Like 'http://xuanke.lzjtu.edu.cn/'
@@ -34,9 +46,9 @@ class Lcrawl
     private $main_page_uri = 'xs_main.aspx';
 
     private $headers = [
-        'timeout'      => 3.0,
-        'User-Agent'   => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36',
-        'Accept'       => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'timeout' => 3.0,
+        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36',
+        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Content-Type' => 'application/x-www-form-urlencoded'
     ];
 
@@ -82,7 +94,7 @@ class Lcrawl
         }
 
         //Set the login post param
-        if (!empty($loginParam)){
+        if (!empty($loginParam)) {
             $this->loginParam = $loginParam;
         }
 
@@ -91,7 +103,7 @@ class Lcrawl
 
     /**
      * Get cookie from cache or login.
-     * 
+     *
      * @param bool $forceRefresh
      * @return string
      */
@@ -110,11 +122,11 @@ class Lcrawl
 
     /**
      * Set the cache manager.
-     * 
+     *
      * @param Doctrine\Common\Cache\Cache
      * @return Lcrawl
      */
-     public function setCache(Cache $cache)
+    public function setCache(Cache $cache)
     {
         $this->cache = $cache;
         return $this;
@@ -122,7 +134,7 @@ class Lcrawl
 
     /**
      * Return the cache manager.
-     * 
+     *
      * @param void
      * @return \Doctrine\Common\Cache\Cache
      */
@@ -133,8 +145,8 @@ class Lcrawl
 
     /**
      * Set the UserAgent.
-     * 
-     * @param string $ua 
+     *
+     * @param string $ua
      * @return Object $this
      */
     public function setUa($ua)
@@ -145,7 +157,7 @@ class Lcrawl
 
     /**
      * Get the User-Agent value.
-     * 
+     *
      * @return type
      */
     public function getUa()
@@ -155,8 +167,8 @@ class Lcrawl
 
     /**
      * Set the Timeout.
-     * 
-     * @param type $time 
+     *
+     * @param type $time
      * @return type
      */
     public function setTimeOut($time)
@@ -171,7 +183,7 @@ class Lcrawl
 
     /**
      * Get the Timeout.
-     * 
+     *
      * @return type
      */
     public function getTimeOut()
@@ -181,8 +193,8 @@ class Lcrawl
 
     /**
      * Set the Login uri. The default uri is default_ysdx.aspx.
-     * 
-     * @param type $uri 
+     *
+     * @param type $uri
      * @return type
      */
     public function setLoginUri($uri)
@@ -193,7 +205,7 @@ class Lcrawl
 
     /**
      * Get the login uri.
-     * 
+     *
      * @return type
      */
     public function getLoginUri()
@@ -203,8 +215,8 @@ class Lcrawl
 
     /**
      * Set the Referer header.
-     * 
-     * @param type $referer 
+     *
+     * @param type $referer
      * @return type
      */
     public function setReferer($referer)
@@ -215,7 +227,7 @@ class Lcrawl
 
     /**
      * Get the Referer header.
-     * 
+     *
      * @return type
      */
     public function getReferer()
@@ -225,8 +237,8 @@ class Lcrawl
 
     /**
      * Set the cache cookie prefix, default is Lcrawl.
-     * 
-     * @param type $prefix 
+     *
+     * @param type $prefix
      * @return type
      */
     public function setCachePrefix($prefix)
@@ -237,7 +249,7 @@ class Lcrawl
 
     /**
      * Get the cache cookie prefix, default is Lcrawl.
-     * 
+     *
      * @return type
      */
     public function getCachePrefix()
@@ -247,8 +259,8 @@ class Lcrawl
 
     /**
      * Set the main page uri, the default value is 'xs_main.aspx'
-     * 
-     * @param string $uri 
+     *
+     * @param string $uri
      * @return type
      */
     public function setMainPageUri($uri)
@@ -259,17 +271,17 @@ class Lcrawl
 
     /**
      * Get the main page uri, the default value is 'xs_main.aspx'
-     * 
+     *
      * @return string
      */
     public function getMainPageUri()
     {
-        return  $this->main_page_uri;
+        return $this->main_page_uri;
     }
 
     /**
      * Login, and get the cookie jar.
-     * 
+     *
      * @param void
      * @return $this or $jar
      */
@@ -290,7 +302,7 @@ class Lcrawl
             'button' => 'Button1'
         ];
 
-        if (!empty($this->loginParam)){
+        if (!empty($this->loginParam)) {
             $loginParam = $this->loginParam;
         }
 
@@ -303,7 +315,7 @@ class Lcrawl
         ];
 
         $query = [
-             'form_params' => $form_params
+            'form_params' => $form_params
         ];
 
         //If set to cache cookie
@@ -332,15 +344,15 @@ class Lcrawl
 
     /**
      * By Concurrent requests, to get all the data.
-     * 
+     *
      * @return Array
      */
     public function getAll()
     {
         $requests = [
-            'schedule' => $this->buildGetRequest('xskbcx.aspx', [], $this->headers, true),
-            'cet' => $this->buildGetRequest('xsdjkscx.aspx', [], $this->headers, true),
-            'exam' => $this->buildGetRequest('xskscx.aspx', [], $this->headers, true),
+            'schedule' => $this->buildGetRequest(self::ZF_SCHEDULE_URI, [], $this->headers, true),
+            'cet' => $this->buildGetRequest(self::ZF_CET_URI, [], $this->headers, true),
+            'exam' => $this->buildGetRequest(self::ZF_EXAM_URI, [], $this->headers, true),
         ];
         // Wait on all of the requests to complete. Throws a ConnectException
         // if any of the requests fail
@@ -359,15 +371,13 @@ class Lcrawl
 
     /**
      * Get the grade data. This function is request all of grade.
-     * 
+     *
      * @return type
      */
     public function getGrade()
     {
-        $uri = 'xscjcx.aspx';
-
         //Get the hidden value.
-        $response = $this->buildGetRequest($uri, [], $this->headers);
+        $response = $this->buildGetRequest(self::ZF_GRADE_URI, [], $this->headers);
         $viewstate = $this->parserOthersHiddenValue($response->getBody());
 
         $post['__EVENTTARGET'] = '';
@@ -379,14 +389,14 @@ class Lcrawl
         $post['ddl_kcxz'] = '';
         $post['btn_zcj'] = iconv('utf-8', 'gb2312', '历年成绩');
 
-        $response = $this->buildPostRequest($uri, [], $post, $this->headers);
+        $response = $this->buildPostRequest(self::ZF_GRADE_URI, [], $post, $this->headers);
 
         return $this->parserCommonTable($response->getBody(), '#Datagrid1');
     }
 
     /**
      * Get the schedule data
-     * 
+     *
      * @return Array
      */
     public function getSchedule()
@@ -396,7 +406,7 @@ class Lcrawl
          * If you want to get the other term's data, use POST
          * TODO: use POST to get other term's data
          */
-        $response = $this->buildGetRequest('xskbcx.aspx', [], $this->headers);
+        $response = $this->buildGetRequest(self::ZF_SCHEDULE_URI, [], $this->headers);
         return $this->parserSchedule($response->getBody());
     }
 
@@ -406,31 +416,31 @@ class Lcrawl
      */
     public function getCet()
     {
-        $response = $this->buildGetRequest('xsdjkscx.aspx');
+        $response = $this->buildGetRequest(self::ZF_CET_URI);
         return $this->parserCommonTable($response->getBody());
     }
 
     /**
      * Get the default term exam data by GET.
      * If We need another term's data, use POST. //TODO
-     * 
+     *
      * @return type
      */
     public function getExam()
     {
-        $response = $this->buildGetRequest('xskscx.aspx');
+        $response = $this->buildGetRequest(self::ZF_EXAM_URI);
         return $this->parserCommonTable($response->getBody());
     }
 }
 
 /**
  * Just a debug function
- * 
- * @param Obeject/Array/string $arr
+ *
+ * @param Obeject /Array/string $arr
  * @param String $hint debug hint
  * @return void
  */
-function dd($arr,$hint = '')
+function dd($arr, $hint = '')
 {
     if (is_object($arr) || is_array($arr)) {
         echo "<pre>";
