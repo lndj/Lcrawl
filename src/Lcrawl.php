@@ -291,7 +291,6 @@ class Lcrawl
         $response = $this->client->get($this->login_uri);
         $viewstate = $this->parserHiddenValue($response->getBody());
 
-        //TODO For different login uri, use different key.
 
         //The default login post param
         $loginParam = [
