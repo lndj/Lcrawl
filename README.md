@@ -110,7 +110,7 @@ $client->setCache($cacheDriver);
 
 本SDK默认使用的是 `ysdx_default.aspx` 为登陆的 `uri` 。若要使用其他 `uri` ，可自行抓包获取登录过程的参数。
 
-在实例化时，传入第四个参数， `$loginParam`
+在实例化时，传入第四个参数， `$loginParam` ,数组的key为固定值,value传入抓包过程中 `POST body` 的字段名即可。
 
 ```php
 
@@ -132,7 +132,7 @@ $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, true, $loginParam);
 
 #### `getAll()`
 
-获取所有数据
+获取所有数据,并发获取
 
 #### `getSchedule()`
 
