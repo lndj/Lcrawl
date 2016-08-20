@@ -64,4 +64,26 @@ class Log
 
         return $log;
     }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    function __call($name, $arguments)
+    {
+        return call_user_func_array([self::getLogger(), $name], $arguments);
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    public static function __callStatic($name, $arguments)
+    {
+        return forward_static_call_array([self::getLogger(), $name], $arguments);
+    }
+
+
 }

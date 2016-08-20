@@ -19,6 +19,8 @@ use Doctrine\Common\Cache\FilesystemCache;
 
 use Lndj\Traits\Parser;
 use Lndj\Traits\BuildRequest;
+use Lndj\Support\Log;
+use Symfony\Component\CssSelector\Exception\ExpressionErrorException;
 
 class Lcrawl
 {
@@ -288,8 +290,15 @@ class Lcrawl
     {
         //Get the hidden value from login page.
         $response = $this->client->get($this->login_uri);
-        $viewstate = $this->parserHiddenValue($response->getBody());
-
+        try {
+            $viewstate = $this->parserHiddenValue($response->getBody());
+        } catch (ExpressionErrorException $e) {
+            Log::debug('login process: parser the hidden value from login page failed!', [
+                'Body' => $response->getBody(),
+                'Message' => $e->getMessage(),
+                'TraceString' => $e->getTraceAsString(),
+            ]);
+        }
 
         //The default login post param
         $loginParam = [
