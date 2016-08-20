@@ -3,11 +3,11 @@
 /**
  * This is a lib to crawl the Academic Network Systems.
  * You can achieve easely the querying of grade/schedule/cet/free classroom ...
- * 
+ *
  * @author Ning Luo <luoning@Luoning.me>
  * @link https://github.com/lndj/Lcrawl
  * @license  MIT
- */ 
+ */
 
 namespace Lndj\Traits;
 
@@ -16,11 +16,12 @@ use Symfony\Component\DomCrawler\Crawler;
 /**
  * This is trait to parser data from HTML.
  */
-trait  Parser {
+trait  Parser
+{
     /**
      * Paser the schedule data.
-     * 
-     * @param Object $body 
+     *
+     * @param Object $body
      * @return Array
      */
     public function parserSchedule($body)
@@ -28,45 +29,45 @@ trait  Parser {
         $crawler = new Crawler((string)$body);
         $crawler = $crawler->filter('#Table1');
         $schedule = $crawler->children();
-        
+
         $format_arr = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
         $data = [];
         $data_line = [];
 
         //loop the row
-        for ($i=2; $i <= 10; $i++) { 
+        for ($i = 2; $i <= 10; $i++) {
             if ($i % 2 === 0) {
                 //Every 4 lines lack 1 row
                 if ($i % 4 === 0) {
-                    for ($j=1; $j <= 7; $j++) { 
+                    for ($j = 1; $j <= 7; $j++) {
                         $schedule_info = $schedule->eq($i)->children()->eq($j)->html();
                         array_push($data_line, $schedule_info);
-                    }   
+                    }
                     continue;
                 }
                 //Loop the line
-                for ($j=2; $j <= 8; $j++) { 
+                for ($j = 2; $j <= 8; $j++) {
                     $schedule_info = $schedule->eq($i)->children()->eq($j)->html();
                     array_push($data_line, $schedule_info);
                 }
             }
         }
         //Formate the data array.
-        $data = array_chunk($data_line,5);
+        $data = array_chunk($data_line, 5);
         return array_combine($format_arr, $data);
     }
 
     /**
      * Parser the common table, like cet, chooseClass, etc.
-     * 
-     * @param type|Object $body 
-     * @param type|string $selector 
+     *
+     * @param type|Object $body
+     * @param type|string $selector
      * @return array
      */
     public function parserCommonTable($body, $selector = '#DataGrid1')
     {
         $crawler = new Crawler((string)$body);
-        
+
         $crawler = $crawler->filter($selector);
         $cet = $crawler->children();
         $data = $cet->each(function (Crawler $node, $i) {
@@ -81,8 +82,8 @@ trait  Parser {
 
     /**
      * Parser the hidden value of HTML form.
-     * 
-     * @param type $body 
+     *
+     * @param type $body
      * @return type
      */
     public function parserHiddenValue($body)
@@ -93,8 +94,8 @@ trait  Parser {
 
     /**
      * When get Grade info, the hidden value is not same as login page.
-     * 
-     * @param type $body 
+     *
+     * @param type $body
      * @return type
      */
     public function parserOthersHiddenValue($body)
