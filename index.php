@@ -21,7 +21,6 @@ $user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
 
 $client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, false);
 
-$client->login();
 
 $all = $client->setUa('Lcrawl Spider V2.0.2')->getGrade();
 //setTimeOut()

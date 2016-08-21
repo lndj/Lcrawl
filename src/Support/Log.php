@@ -49,23 +49,6 @@ class Log
     }
 
     /**
-     * Create a default Logger.
-     * @return Monolog\Logger
-     */
-    private static function createDefaultLogger()
-    {
-        $log = new Logger('Lcrawl');
-
-        if (defined('PHPUNIT_RUNNING')) {
-            $log->pushHandler(new NullHandler());
-        } else {
-            $log->pushHandler(new ErrorLogHandler());
-        }
-
-        return $log;
-    }
-
-    /**
      * @param $name
      * @param $arguments
      * @return mixed
@@ -85,5 +68,20 @@ class Log
         return forward_static_call_array([self::getLogger(), $name], $arguments);
     }
 
+    /**
+     * Create a default Logger.
+     * @return Monolog\Logger
+     */
+    private static function createDefaultLogger()
+    {
+        $log = new Logger('Lcrawl');
 
+        if (defined('PHPUNIT_RUNNING')) {
+            $log->pushHandler(new NullHandler());
+        } else {
+            $log->pushHandler(new ErrorLogHandler());
+        }
+
+        return $log;
+    }
 }

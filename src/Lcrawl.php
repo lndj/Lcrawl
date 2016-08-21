@@ -20,6 +20,9 @@ use Doctrine\Common\Cache\FilesystemCache;
 use Lndj\Traits\Parser;
 use Lndj\Traits\BuildRequest;
 use Lndj\Support\Log;
+use Monolog\Handler\NullHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Symfony\Component\CssSelector\Exception\ExpressionErrorException;
 
 class Lcrawl
@@ -38,14 +41,35 @@ class Lcrawl
     //课表查询uri
     const ZF_SCHEDULE_URI = 'xskbcx.aspx';
 
+    /**
+     * The client of guzzle.
+     * @var Client
+     */
     private $client;
 
-    private $base_uri; //The base_uri of your Academic Network Systems. Like 'http://xuanke.lzjtu.edu.cn/'
+    /**
+     * The base url.
+     * Like 'http://xuanke.lzjtu.edu.cn/'
+     * @var
+     */
+    private $base_url;
 
+    /**
+     * Login uri.
+     * @var string
+     */
     private $login_uri = 'default_ysdx.aspx';
 
+    /**
+     * The main page of ZF after login.
+     * @var string
+     */
     private $main_page_uri = 'xs_main.aspx';
 
+    /**
+     * The Header when request.
+     * @var array
+     */
     private $headers = [
         'timeout' => 3.0,
         'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36',
@@ -53,23 +77,64 @@ class Lcrawl
         'Content-Type' => 'application/x-www-form-urlencoded'
     ];
 
+    /**
+     * The student id.
+     * @var
+     */
     private $stu_id;
 
+    /**
+     * Password of ZF.
+     * @var
+     */
     private $password;
 
-    private $cacheCookie = false; // Is cookie cached
+    /**
+     * Is cookie cached
+     * @var bool
+     */
+    private $cacheCookie = false;
 
-    private $cache; //Doctrine\Common\Cache\Cache
+    /**
+     * //Doctrine\Common\Cache\Cache
+     * @var
+     */
+    private $cache;
 
+    /**
+     * Cache prefix.
+     * @var string
+     */
     private $cachePrefix = 'Lcrawl';
 
     //The login post param
     private $loginParam = [];
 
-    function __construct($base_uri, $user, $isCacheCookie = false, $loginParam = [])
+    /**
+     * The monolog file.
+     * @var string
+     */
+    private $logFile = './Lcrawl.log';
+
+    /**
+     * Monolog level.
+     * @var int
+     */
+    private $logLevel = Logger::ERROR;
+
+    /**
+     * Init the Lcrawl.
+     * Lcrawl constructor.
+     * @param $base_url
+     * @param $user
+     * @param bool $isCacheCookie
+     * @param array $loginParam
+     * @param array $logOption
+     */
+    function __construct($base_url, $user, $isCacheCookie = false, $loginParam = [], $logOption = [])
     {
-        //Set the base_uri.
-        $this->base_uri = $base_uri;
+        //Set the base_url.
+        $this->base_url = $base_url;
 
         //Set the stu_id and password
         if (is_array($user) && $user['stu_id'] && $user['stu_pwd']) {
@@ -83,7 +148,7 @@ class Lcrawl
         }
         $client_param = [
             // Base URI is used with relative requests
-            'base_uri' => $this->base_uri,
+            'base_url' => $this->base_url,
         ];
 
         //If this value is true, Lcrawl will cache the cookie jar when logining.
@@ -97,6 +162,13 @@ class Lcrawl
         //Set the login post param
         if (!empty($loginParam)) {
             $this->loginParam = $loginParam;
+        }
+
+        //Set the log option.
+        if (!empty($logOption)) {
+            $this->initializeLogger($logOption['file'], $logOption['level']);
+        } else {
+            $this->initializeLogger($this->logFile, $this->logLevel);
         }
 
         $this->client = new Client($client_param);
@@ -437,5 +509,26 @@ class Lcrawl
     {
         $response = $this->buildGetRequest(self::ZF_EXAM_URI);
         return $this->parserCommonTable($response->getBody());
+    }
+
+    /**
+     * Initialize the logger instanes.
+     * @param $logFile
+     * @param int $level
+     */
+    private function initializeLogger($logFile, $level = Logger::WARNING)
+    {
+        if (Log::hasLogger()) {
+            return;
+        }
+
+        $logger = new Logger('Lcrawl');
+        if (defined('PHPUNIT_RUNNING')) {
+            $logger->pushHandler(new NullHandler());
+        } else {
+            $logger->pushHandler(new StreamHandler($logFile, $level));
+        }
+
+        Log::setLogger($logger);
     }
 }
