@@ -439,23 +439,3 @@ class Lcrawl
         return $this->parserCommonTable($response->getBody());
     }
 }
-
-/**
- * Just a debug function
- *
- * @param Obeject /Array/string $arr
- * @param String $hint debug hint
- * @return void
- */
-function dd($arr, $hint = '')
-{
-    if (is_object($arr) || is_array($arr)) {
-        echo "<pre>";
-        print_r($arr);
-        echo PHP_EOL . $hint;
-        echo "</pre>";
-    } else {
-        var_dump($arr);
-        echo PHP_EOL . $hint;
-    }
-}
