@@ -14,10 +14,10 @@ namespace Lndj;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
-use GuzzleHttp\Pool;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
 
+use Lndj\Supports\Log;
 use Lndj\Traits\Parser;
 use Lndj\Traits\BuildRequest;
 
@@ -78,6 +78,7 @@ class Lcrawl
             $this->stu_id = $user->stu_id;
             $this->password = $user->stu_pwd;
         } else {
+            Log::error('Login Param error!', $user);
             throw new Exception("You must give Lcrawl the user info, like ['stu_id' => '2012xxxxx', 'stu_pwd' => 'xxxx']", 1);
         }
         $client_param = [
@@ -333,9 +334,11 @@ class Lcrawl
                 return $this->cacheCookie ? $jar : $this;
                 break;
             case 302:
+                Log::info('The password is wrong!', $query);
                 throw new \Exception('The password is wrong!', 1);
                 break;
             default:
+                Log::error('Maybe the data source is broken!', $response);
                 throw new \Exception('Maybe the data source is broken!', 1);
                 break;
         }

@@ -31,7 +31,6 @@ trait  Parser
         $schedule = $crawler->children();
 
         $format_arr = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        $data = [];
         $data_line = [];
 
         //loop the row
