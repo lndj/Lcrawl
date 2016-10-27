@@ -27,33 +27,49 @@ trait  Parser {
     {
         $crawler = new Crawler((string)$body);
         $crawler = $crawler->filter('#Table1');
-        $schedule = $crawler->children();
-        
-        $format_arr = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        $data = [];
-        $data_line = [];
-
-        //loop the row
-        for ($i=2; $i <= 10; $i++) { 
-            if ($i % 2 === 0) {
-                //Every 4 lines lack 1 row
-                if ($i % 4 === 0) {
-                    for ($j=1; $j <= 7; $j++) { 
-                        $schedule_info = $schedule->eq($i)->children()->eq($j)->html();
-                        array_push($data_line, $schedule_info);
-                    }   
-                    continue;
-                }
-                //Loop the line
-                for ($j=2; $j <= 8; $j++) { 
-                    $schedule_info = $schedule->eq($i)->children()->eq($j)->html();
-                    array_push($data_line, $schedule_info);
+        $page = $crawler->children();
+        //delete line 1、2;
+        $page = $page->reduce(function (Crawler $node, $i) {
+            if ($i == 0 || $i == 1) {
+                return false;
+            }
+        });
+        //to array
+        $array = $page->each(function (Crawler $node, $i) {
+            return $node->children()->each(function (Crawler $node, $j) {
+                $span = $node->attr('rowspan');
+                return $node->html() . (empty($span) ? '' : "span={$span}");
+            });
+        });
+        /**
+         * 处理跨行
+         * 遍历数组，如果[j][i]元素跨行，在【j+1】行的【i】位置插入该元素
+         * 注意
+         * 遍历的顺序是竖直方向(a->e->h->j)；
+         * 如果横向遍历，会出现如下情况
+         * =========
+         *  a b c d
+         *  e f g _
+         *  h i _ _  
+         *  j k l m
+         * =========
+         * _表示没有元素，是上一行的跨行。
+         * 横向遍历时（a->b->c->d），d的跨行会导致第三行还没插入g元素时就已插入d元素
+         */
+        for ($i = 0; $i < 9; $i++) {//rows
+            for ($j = 0; $j < count($array); $j++) {//lines
+                if (preg_match("/span=(.?)/", $array[$j][$i], $regs)) { // if rowspan
+                    $array[$j][$i] = preg_replace("/span=./", '', $array[$j][$i]);
+                    $k = $regs[1];
+                    while (--$k > 0) { // insert element to next line
+                        $array[$j + $k] = array_merge(array_slice($array[$j + $k], 0, $i),
+                            array(preg_replace("/span=./", '', $array[$j][$i])),
+                            array_splice($array[$j + $k], $i));
+                    }
                 }
             }
         }
-        //Formate the data array.
-        $data = array_chunk($data_line,5);
-        return array_combine($format_arr, $data);
+        return  $array;
     }
 
     /**
