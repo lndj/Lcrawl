@@ -28,32 +28,45 @@ trait  Parser
     {
         $crawler = new Crawler((string)$body);
         $crawler = $crawler->filter('#Table1');
-        $schedule = $crawler->children();
+        $page = $crawler->children();
+        //delete line 1、2;
+        $page = $page->reduce(function (Crawler $node, $i) {
+            if ($i == 0 || $i == 1) {
+                return false;
+            }
+        });
+        //to array
+        $array = $page->each(function (Crawler $node, $i) {
+            return $node->children()->each(function (Crawler $node, $j) {
+                $span = (int)$node->attr('rowspan') ?: 0;
+                return [$node->html(), $span];
+            });
+        });
 
-        $format_arr = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        $data_line = [];
-
-        //loop the row
-        for ($i = 2; $i <= 10; $i++) {
-            if ($i % 2 === 0) {
-                //Every 4 lines lack 1 row
-                if ($i % 4 === 0) {
-                    for ($j = 1; $j <= 7; $j++) {
-                        $schedule_info = $schedule->eq($i)->children()->eq($j)->html();
-                        array_push($data_line, $schedule_info);
+        //If there are some classes in the table is in two or more lines,
+        //insert it into the next lines in $array.
+        //Thanks for @CheukFung
+        $line_count = count($array);
+        $schedule = [];
+        for ($i = 0; $i < $line_count; $i++) {  //lines
+            for ($j = 0; $j < 9; $j++) {    //rows
+                if (isset($array[$i][$j])) {
+                    $k = $array[$i][$j][1];
+                    while (--$k > 0) { // insert element to next line
+                        //Set the span 0
+                        $array[$i][$j][1] = 0;
+                        $array[$i + $k] = array_merge(
+                            array_slice($array[$i + $k], 0, $j),
+                            [$array[$i][$j]],
+                            array_splice($array[$i + $k], $j)
+                        );
                     }
-                    continue;
                 }
-                //Loop the line
-                for ($j = 2; $j <= 8; $j++) {
-                    $schedule_info = $schedule->eq($i)->children()->eq($j)->html();
-                    array_push($data_line, $schedule_info);
-                }
+                $schedule[$i][$j] = isset($array[$i][$j][0]) ? $array[$i][$j][0] : '';
             }
         }
-        //Formate the data array.
-        $data = array_chunk($data_line, 5);
-        return array_combine($format_arr, $data);
+
+        return $schedule;
     }
 
     /**
