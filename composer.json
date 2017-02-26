@@ -17,7 +17,8 @@
         "guzzlehttp/guzzle": "~6.0",
         "symfony/dom-crawler": "^3.0",
         "symfony/css-selector": "^3.0",
-        "doctrine/cache": "^1.6"
+        "doctrine/cache": "^1.6",
+        "monolog/monolog": "1.21.0"
     },
     "autoload": {
     	"psr-4": {
