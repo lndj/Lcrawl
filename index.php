@@ -12,39 +12,14 @@ require 'vendor/autoload.php';
 
 use Lndj\Lcrawl;
 
-//stu_id
-$stu_id = '201404739';
-//your password 
-$password = 'xxxxxx';
-
-$user = ['stu_id' => $stu_id, 'stu_pwd' => $password];
-
-$client = new Lcrawl('http://xuanke.lzjtu.edu.cn/', $user, false);
-
-$client->login();
-
-$all = $client->setUa('Lcrawl Spider V2.0.2')->getGrade();
-//setTimeOut()
-//setReferer
-//set...
-dd($all);
-
-// dd($client->login());
-// $client->getSchedule();
-// $client->getCet();
-
-
-//Set the login post param
-
-/*
-[
-    'viewstate' => '__VIEWSTATE',
-    'stu_id' => 'TextBox1',
-    'passwod' => 'TextBox2',
-    'role' => 'RadioButtonList1',
-    'button' => 'Button1'
-]
-*/
+$user = [
+    'stu_id'  => '1610612057',
+    'stu_pwd' => 'xzx595...'
+];
+$client = new Lcrawl('http://jwxt.hzu.gx.cn/',$user, true);
+//获取所有
+$data = $client->getSchedule();
+dd($data);
 
 /**
  * Just a debug function

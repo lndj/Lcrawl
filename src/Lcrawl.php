@@ -17,7 +17,6 @@ use GuzzleHttp\Promise;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
 
-use Lndj\Supports\Log;
 use Lndj\Traits\Parser;
 use Lndj\Traits\BuildRequest;
 
@@ -39,22 +38,30 @@ class Lcrawl
 
     private $client;
 
-    private $base_uri; //The base_uri of your Academic Network Systems. Like 'http://xuanke.lzjtu.edu.cn/'
+    private $base_uri;
 
-    private $login_uri = 'default_ysdx.aspx';
+    //登录页
+    private $login_uri = 'default2.aspx';
 
+    private $code_uri = 'CheckCode.aspx';
+    //主页
     private $main_page_uri = 'xs_main.aspx';
 
+    //设置头信息
     private $headers = [
         'timeout' => 3.0,
-        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36',
+        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36',
         'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Content-Type' => 'application/x-www-form-urlencoded'
+        'Content-Type' => 'application/x-www-form-urlencoded',
+        'referer'   =>  'http://jwxt.hzu.gx.cn/'
     ];
 
+    //登录隐藏
     private $stu_id;
 
     private $password;
+    //访问页面的sessionid
+    private $sessionId;
 
     private $cacheCookie = false; // Is cookie cached
 
@@ -65,10 +72,22 @@ class Lcrawl
     //The login post param
     private $loginParam = [];
 
-    function __construct($base_uri, $user, $isCacheCookie = false, $loginParam = [])
+    /**
+     * Lcrawl constructor.
+     * @param $base_uri
+     * @param $user
+     * @param bool $isCacheCookie
+     * @param array $loginParam
+     * @throws \Exception
+     */
+    public function __construct($base_uri, $user, $isCacheCookie = false, $loginParam = [])
     {
+
+        //Set SessionId
+        $this->sessionId = $this->getSessionId($base_uri);
+
         //Set the base_uri.
-        $this->base_uri = $base_uri;
+        $this->base_uri = $base_uri."($this->sessionId)/";
 
         //Set the stu_id and password
         if (is_array($user) && $user['stu_id'] && $user['stu_pwd']) {
@@ -78,12 +97,13 @@ class Lcrawl
             $this->stu_id = $user->stu_id;
             $this->password = $user->stu_pwd;
         } else {
-            Log::error('Login Param error!', $user);
-            throw new Exception("You must give Lcrawl the user info, like ['stu_id' => '2012xxxxx', 'stu_pwd' => 'xxxx']", 1);
+            throw new \Exception("You must give Lcrawl the user info, like ['stu_id' => '2016xxxxx', 'stu_pwd' => 'xxxx']", 1);
         }
+
         $client_param = [
             // Base URI is used with relative requests
             'base_uri' => $this->base_uri,
+            'headers'  => $this->headers
         ];
 
         //If this value is true, Lcrawl will cache the cookie jar when logining.
@@ -98,25 +118,206 @@ class Lcrawl
         if (!empty($loginParam)) {
             $this->loginParam = $loginParam;
         }
-
         $this->client = new Client($client_param);
+
+
     }
 
     /**
-     * Get cookie from cache or login.
+     * Login, and get the cookie jar.
      *
+     * @author 勇敢的小笨羊
+     * @return \GuzzleHttp\Cookie\CookieJar|Lcrawl
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function login()
+    {
+        //设置cookie
+        $jar = new \GuzzleHttp\Cookie\CookieJar();
+        $cookies = [
+            'ASP.NET_SessionId' => $this->sessionId ,
+        ];
+        //cookie组成 设置域
+        $cookieJar = $jar->fromArray($cookies,'jwxt.hzu.gx.cn');
+
+        //获取隐藏__VIEWSTATE
+        $stateresponse = $this->client->request('get',$this->login_uri,['cookies' => $cookieJar]);
+        $viewstate = $this->parserHiddenValue($stateresponse->getBody());
+
+        //获取验证码
+        $coderesponse = $this->client->request('get',$this->code_uri,['cookies' => $cookieJar]);
+        $codeBody = $coderesponse->getBody();
+
+        //取出验证码
+        $fp = fopen("verifyCode.jpg","w");
+
+        fwrite($fp,$codeBody);
+        fclose($fp);
+
+        sleep(15);
+        //获取验证码
+        $code = file_get_contents("code.txt");
+
+        //构建登录表单数据
+        $loginParam = [
+            '__VIEWSTATE'       => $viewstate,
+            'txtUserName'       => $this->stu_id,
+            'Textbox1'          => '',
+            'TextBox2'          => $this->password,
+            'txtSecretCode'     => $code,
+            'RadioButtonList1'  => utf8('学生'),
+            'Button1'           => '',
+            'lbLanguage'        => '',
+            'hidPdrs'           => '',
+            'hidsc'             => '',
+
+        ];
+
+        //传入表单
+        if (!empty($this->loginParam)) {
+            $loginParam = $this->loginParam;
+        }
+        //提交登录带上cookie
+        $query = [
+            'form_params' => $loginParam,
+            'cookies' =>   $cookieJar
+        ];
+
+        //提交登录信息
+        $this->client->request('POST',$this->login_uri, $query);
+        //登录成功检测登录状态?
+        $response = $this->client->get($this->main_page_uri, ['allow_redirects' => false,'cookie'=> $cookieJar, 'query' => ['xh' => $this->stu_id]]);
+
+        // 能访问首页  说明登陆成功
+        switch ($response->getStatusCode()) {
+            case 200:
+                return $this->cacheCookie ? $cookieJar : $this;
+                break;
+            case 302:
+                throw new \Exception('The password is wrong!', 1);
+                break;
+            default:
+                throw new \Exception('Maybe the data source is broken!', 1);
+                break;
+        }
+    }
+
+    /**
+     * By Concurrent requests, to get all the data.
+     *
+     * @author 勇敢的小笨羊
+     * @return array
+     * @throws \Exception
+     */
+    public function getAll()
+    {
+        $requests = [
+            'schedule' => $this->buildGetRequest(self::ZF_SCHEDULE_URI, [], $this->headers, true),
+            'cet' => $this->buildGetRequest(self::ZF_CET_URI, [], $this->headers, true),
+            'exam' => $this->buildGetRequest(self::ZF_EXAM_URI, [], $this->headers, true),
+        ];
+        // Wait on all of the requests to complete. Throws a ConnectException
+        // if any of the requests fail
+        //$results = Promise\unwrap($requests);
+
+        // Wait for the requests to complete, even if some of them fail
+        $results = Promise\settle($requests)->wait();
+
+        //Parser the data we need.
+        $schedule = $this->parserSchedule($results['schedule']->getBody());
+        $cet = $this->parserCommonTable($results['cet']->getBody());
+        $exam = $this->parserCommonTable($results['exam']->getBody());
+
+        return compact('schedule', 'cet', 'exam');
+    }
+
+    /**
+     * Get the grade data. This function is request all of grade.
+     *
+     * @author 勇敢的小笨羊
+     * @return array
+     */
+    public function getGrade()
+    {
+        //Get the hidden value.
+        $response = $this->buildGetRequest(self::ZF_GRADE_URI, [], $this->headers);
+        $viewstate = $this->parserOthersHiddenValue($response->getBody());
+
+        $post['__EVENTTARGET'] = '';
+        $post['__EVENTARGUMENT'] = '';
+        $post['__VIEWSTATE'] = $viewstate;
+        $post['hidLanguage'] = '';
+        $post['ddlXN'] = '';  //学年
+        $post['ddlXQ'] = '';  //学期
+        $post['ddl_kcxz'] = '';
+        $post['btn_zcj'] = utf8('历年成绩');
+
+        $response = $this->buildPostRequest(self::ZF_GRADE_URI, [], $post, $this->headers);
+
+        return $this->parserCommonTable($response->getBody(), '#Datagrid1');
+    }
+
+    /**
+     * Get the schedule data
+     *
+     * @author 勇敢的小笨羊
+     * @return Traits\Array
+     */
+    public function getSchedule()
+    {
+        /**
+         * Default: get the current term schedule data by GET
+         * If you want to get the other term's data, use POST
+         * TODO: use POST to get other term's data
+         */
+        $param['gnmkdm'] = 'N121603';
+        $param['xm'] = utf8('许祖兴');
+        $response = $this->buildGetRequest(self::ZF_SCHEDULE_URI, $param, $this->headers);
+        return $this->parserSchedule($response->getBody());
+    }
+
+    /**
+     * Get the CET data.
+     *
+     * @author 勇敢的小笨羊
+     * @return array
+     */
+    public function getCet()
+    {
+        $response = $this->buildGetRequest(self::ZF_CET_URI);
+        return $this->parserCommonTable($response->getBody());
+    }
+
+    /**
+     * Get the default term exam data by GET.
+     *
+     * @author 勇敢的小笨羊
+     * @return array
+     */
+    public function getExam()
+    {
+        $response = $this->buildGetRequest(self::ZF_EXAM_URI);
+        return $this->parserCommonTable($response->getBody());
+    }
+
+    /**
+     *  Get cookie from cache or login.
+     *
+     * @author 勇敢的小笨羊
      * @param bool $forceRefresh
-     * @return string
+     * @return \GuzzleHttp\Cookie\CookieJar|Lcrawl|mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getCookie($forceRefresh = false)
     {
         $cacheKey = $this->cachePrefix . $this->stu_id;
         $cached = $this->getCache()->fetch($cacheKey);
         if ($forceRefresh || empty($cached)) {
-            $jar = $this->login();
-            //Cache the cookieJar 3000 s.
-            $this->getCache()->save($cacheKey, serialize($jar), 3000);
-            return $jar;
+            //登录获取cookie
+            $cookiejar = $this->login();
+            //储存cookie 到缓存
+            $this->getCache()->save($cacheKey, serialize($cookiejar), 300);
+            return $cookiejar;
         }
         return unserialize($cached);
     }
@@ -124,8 +325,8 @@ class Lcrawl
     /**
      * Set the cache manager.
      *
-     * @param Doctrine\Common\Cache\Cache
-     * @return Lcrawl
+     * @param Cache $cache
+     * @return $this
      */
     public function setCache(Cache $cache)
     {
@@ -145,69 +346,61 @@ class Lcrawl
     }
 
     /**
-     * Set the UserAgent.
+     * Get base_uri sessionId
      *
-     * @param string $ua
-     * @return Object $this
+     * @author 勇敢的小笨羊
+     * @param $base_uri
+     * @return mixed
      */
-    public function setUa($ua)
+    public function getSessionId($base_uri)
     {
-        $this->headers['User-Agent'] = $ua;
-        return $this;
+        $curl   = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $base_uri);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_HEADER, 1);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($curl);
+        curl_close($curl);
+        //匹配跳转链接
+        preg_match('/Location: \/\((.*)\)/', $data,$temp);
+        //Set SessionId
+        return $temp[1];
     }
 
     /**
-     * Get the User-Agent value.
-     *
-     * @return type
+     * @return Client
      */
-    public function getUa()
+    public function getClient()
     {
-        return $this->headers['User-Agent'];
+        return $this->client;
     }
 
     /**
-     * Set the Timeout.
-     *
-     * @param type $time
-     * @return type
+     * @param Client $client
      */
-    public function setTimeOut($time)
+    public function setClient($client)
     {
-        if (!is_numeric($time)) {
-            //Should throw a Exception?
-            renturn;
-        }
-        $this->headers['timeout'] = $time;
-        return $this;
+        $this->client = $client;
     }
 
     /**
-     * Get the Timeout.
-     *
-     * @return type
+     * @return string
      */
-    public function getTimeOut()
+    public function getBaseUri()
     {
-        return $this->headers['timeout'];
+        return $this->base_uri;
     }
 
     /**
-     * Set the Login uri. The default uri is default_ysdx.aspx.
-     *
-     * @param type $uri
-     * @return type
+     * @param string $base_uri
      */
-    public function setLoginUri($uri)
+    public function setBaseUri($base_uri)
     {
-        $this->login_uri = $uri;
-        return $this;
+        $this->base_uri = $base_uri;
     }
 
     /**
-     * Get the login uri.
-     *
-     * @return type
+     * @return string
      */
     public function getLoginUri()
     {
@@ -215,64 +408,30 @@ class Lcrawl
     }
 
     /**
-     * Set the Referer header.
-     *
-     * @param type $referer
-     * @return type
+     * @param string $login_uri
      */
-    public function setReferer($referer)
+    public function setLoginUri($login_uri)
     {
-        $this->headers['referer'] = $referer;
-        return $this;
+        $this->login_uri = $login_uri;
     }
 
     /**
-     * Get the Referer header.
-     *
-     * @return type
+     * @return string
      */
-    public function getReferer()
+    public function getCodeUri()
     {
-        return $this->headers['Referer'];
+        return $this->code_uri;
     }
 
     /**
-     * Set the cache cookie prefix, default is Lcrawl.
-     *
-     * @param type $prefix
-     * @return type
+     * @param string $code_uri
      */
-    public function setCachePrefix($prefix)
+    public function setCodeUri($code_uri)
     {
-        $this->cachePrefix = $prefix;
-        return $this;
+        $this->code_uri = $code_uri;
     }
 
     /**
-     * Get the cache cookie prefix, default is Lcrawl.
-     *
-     * @return type
-     */
-    public function getCachePrefix()
-    {
-        return $this->cachePrefix;
-    }
-
-    /**
-     * Set the main page uri, the default value is 'xs_main.aspx'
-     *
-     * @param string $uri
-     * @return type
-     */
-    public function setMainPageUri($uri)
-    {
-        $this->main_page_uri = $uri;
-        return $this;
-    }
-
-    /**
-     * Get the main page uri, the default value is 'xs_main.aspx'
-     *
      * @return string
      */
     public function getMainPageUri()
@@ -281,158 +440,110 @@ class Lcrawl
     }
 
     /**
-     * Login, and get the cookie jar.
-     *
-     * @param void
-     * @return $this or $jar
+     * @param string $main_page_uri
      */
-    public function login()
+    public function setMainPageUri($main_page_uri)
     {
-        //Get the hidden value from login page.
-        $response = $this->client->get($this->login_uri);
-        $viewstate = $this->parserHiddenValue($response->getBody());
-
-
-        //The default login post param
-        $loginParam = [
-            'viewstate' => '__VIEWSTATE',
-            'stu_id' => 'TextBox1',
-            'passwod' => 'TextBox2',
-            'role' => 'RadioButtonList1',
-            'button' => 'Button1'
-        ];
-
-        if (!empty($this->loginParam)) {
-            $loginParam = $this->loginParam;
-        }
-
-        $form_params = [
-            $loginParam['viewstate'] => $viewstate,
-            $loginParam['stu_id'] => $this->stu_id,
-            $loginParam['passwod'] => $this->password,
-            $loginParam['role'] => iconv('utf-8', 'gb2312', '学生'),
-            $loginParam['button'] => iconv('utf-8', 'gb2312', '登录'),
-        ];
-
-        $query = [
-            'form_params' => $form_params
-        ];
-
-        //If set to cache cookie
-        if ($this->cacheCookie) {
-            $jar = new \GuzzleHttp\Cookie\CookieJar;
-            $query['cookies'] = $jar;
-        }
-        //Post to login
-        $result = $this->client->request('POST', $this->login_uri, $query);
-
-        //Is logining successful?
-        $response = $this->client->get($this->main_page_uri, ['allow_redirects' => false, 'query' => ['xh' => $this->stu_id]]);
-
-        switch ($response->getStatusCode()) {
-            case 200:
-                return $this->cacheCookie ? $jar : $this;
-                break;
-            case 302:
-                Log::info('The password is wrong!', $query);
-                throw new \Exception('The password is wrong!', 1);
-                break;
-            default:
-                Log::error('Maybe the data source is broken!', $response);
-                throw new \Exception('Maybe the data source is broken!', 1);
-                break;
-        }
+        $this->main_page_uri = $main_page_uri;
     }
 
     /**
-     * By Concurrent requests, to get all the data.
-     *
-     * @return Array
+     * @return array
      */
-    public function getAll()
+    public function getHeaders()
     {
-        $requests = [
-            'schedule' => $this->buildGetRequest(self::ZF_SCHEDULE_URI, [], $this->headers, true),
-            'cet' => $this->buildGetRequest(self::ZF_CET_URI, [], $this->headers, true),
-            'exam' => $this->buildGetRequest(self::ZF_EXAM_URI, [], $this->headers, true),
-        ];
-        // Wait on all of the requests to complete. Throws a ConnectException
-        // if any of the requests fail
-        $results = Promise\unwrap($requests);
-
-        // Wait for the requests to complete, even if some of them fail
-        // $results = Promise\settle($requests)->wait();
-
-        //Parser the data we need.
-        $schedule = $this->parserSchedule($results['schedule']->getBody());
-        $cet = $this->parserCommonTable($results['cet']->getBody());
-        $exam = $this->parserCommonTable($results['exam']->getBody());
-
-        return compact('schedule', 'cet', 'exam');
+        return $this->headers;
     }
 
     /**
-     * Get the grade data. This function is request all of grade.
-     *
-     * @return type
+     * @param array $headers
      */
-    public function getGrade()
+    public function setHeaders($headers)
     {
-        //Get the hidden value.
-        $response = $this->buildGetRequest(self::ZF_GRADE_URI, [], $this->headers);
-        $viewstate = $this->parserOthersHiddenValue($response->getBody());
-
-        $post['__EVENTTARGET'] = '';
-        $post['__EVENTARGUMENT'] = '';
-        $post['__VIEWSTATE'] = $viewstate;
-        $post['hidLanguage'] = '';
-        $post['ddlXN'] = '';
-        $post['ddlXQ'] = '';
-        $post['ddl_kcxz'] = '';
-        $post['btn_zcj'] = iconv('utf-8', 'gb2312', '历年成绩');
-
-        $response = $this->buildPostRequest(self::ZF_GRADE_URI, [], $post, $this->headers);
-
-        return $this->parserCommonTable($response->getBody(), '#Datagrid1');
+        $this->headers = $headers;
     }
 
     /**
-     * Get the schedule data
-     *
-     * @return Array
+     * @return mixed
      */
-    public function getSchedule()
+    public function getStuId()
     {
-        /**
-         * Default: get the current term schedule data by GET
-         * If you want to get the other term's data, use POST
-         * TODO: use POST to get other term's data
-         */
-        $response = $this->buildGetRequest(self::ZF_SCHEDULE_URI, [], $this->headers);
-        return $this->parserSchedule($response->getBody());
+        return $this->stu_id;
     }
 
     /**
-     * Get the CET data.
-     * @return type|Object
+     * @param mixed $stu_id
      */
-    public function getCet()
+    public function setStuId($stu_id)
     {
-        $response = $this->buildGetRequest(self::ZF_CET_URI);
-        return $this->parserCommonTable($response->getBody());
+        $this->stu_id = $stu_id;
     }
 
     /**
-     * Get the default term exam data by GET.
-     * If We need another term's data, use POST. //TODO
-     *
-     * @return type
+     * @return mixed
      */
-    public function getExam()
+    public function getPassword()
     {
-        $response = $this->buildGetRequest(self::ZF_EXAM_URI);
-        return $this->parserCommonTable($response->getBody());
+        return $this->password;
     }
+
+    /**
+     * @param mixed $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCacheCookie()
+    {
+        return $this->cacheCookie;
+    }
+
+    /**
+     * @param bool $cacheCookie
+     */
+    public function setCacheCookie($cacheCookie)
+    {
+        $this->cacheCookie = $cacheCookie;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCachePrefix()
+    {
+        return $this->cachePrefix;
+    }
+
+    /**
+     * @param string $cachePrefix
+     */
+    public function setCachePrefix($cachePrefix)
+    {
+        $this->cachePrefix = $cachePrefix;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLoginParam()
+    {
+        return $this->loginParam;
+    }
+
+    /**
+     * @param array $loginParam
+     */
+    public function setLoginParam($loginParam)
+    {
+        $this->loginParam = $loginParam;
+    }
+
+
 }
 
 /**
@@ -453,4 +564,20 @@ function dd($arr, $hint = '')
         var_dump($arr);
         echo PHP_EOL . $hint;
     }
+}
+
+/**
+ * gb2312() 函数用来获取转化字符编码gb2312
+ */
+function gb2312($sArg=''){
+    $string=iconv('gb2312', 'utf-8', $sArg);
+    return $string;
+}
+
+/**
+ * utf8() 函数用来获取转化字符编码utf8
+ */
+function utf8($sArg=''){
+    $string=iconv('utf-8', 'gb2312', $sArg);
+    return $string;
 }
