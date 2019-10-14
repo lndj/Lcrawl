@@ -6,11 +6,6 @@
 
 可能是正方教务系统最优雅的一只爬虫。
 
-#项目地址：
-
-http://lcrawl.lzjtuhand.com
-
-http://www.luoning.me/lcrawl.html
 
 # 安装
 
